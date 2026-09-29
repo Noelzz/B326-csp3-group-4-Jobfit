@@ -22,6 +22,22 @@ public class RegisterFrame extends JFrame {
 
     private RegisterController registerController;
 
+    // JobFit colors
+    private static final Color BACKGROUND_COLOR =
+            new Color(245, 247, 250);
+
+    private static final Color TITLE_COLOR =
+            new Color(45, 95, 170);
+
+    private static final Color TEXT_COLOR =
+            new Color(35, 40, 48);
+
+    private static final Color BUTTON_COLOR =
+            new Color(45, 95, 170);
+
+    private static final Color BUTTON_HOVER =
+            new Color(35, 78, 145);
+
     public RegisterFrame() {
 
         registerController = new RegisterController();
@@ -36,7 +52,14 @@ public class RegisterFrame extends JFrame {
 
     private void createGUI() {
 
-        JPanel panel = new JPanel(new GridLayout(8, 2, 10, 10));
+        // Background
+        getContentPane().setBackground(BACKGROUND_COLOR);
+
+        JPanel panel = new JPanel(
+                new GridLayout(8, 2, 10, 10)
+        );
+
+        panel.setBackground(BACKGROUND_COLOR);
 
         panel.setBorder(
                 BorderFactory.createEmptyBorder(
@@ -44,19 +67,28 @@ public class RegisterFrame extends JFrame {
                 )
         );
 
+        // Title
         JLabel titleLabel = new JLabel(
                 "JOBFIT REGISTRATION",
                 SwingConstants.CENTER
         );
 
-        JLabel usernameLabel = new JLabel("Username:");
-        JLabel passwordLabel = new JLabel("Password:");
-        JLabel roleLabel = new JLabel("Role:");
+        titleLabel.setFont(
+                new Font("SansSerif", Font.BOLD, 20)
+        );
 
-        nameLabel = new JLabel("Full Name:");
+        titleLabel.setForeground(TITLE_COLOR);
 
-        usernameField = new JTextField();
+        JLabel usernameLabel = createLabel("Username:");
+        JLabel passwordLabel = createLabel("Password:");
+        JLabel roleLabel = createLabel("Role:");
+
+        nameLabel = createLabel("Full Name:");
+
+        usernameField = createTextField();
+
         passwordField = new JPasswordField();
+        styleTextField(passwordField);
 
         roleComboBox = new JComboBox<>(
                 new String[]{
@@ -65,16 +97,26 @@ public class RegisterFrame extends JFrame {
                 }
         );
 
-        nameField = new JTextField();
-        emailField = new JTextField();
-        phoneField = new JTextField();
+        roleComboBox.setFont(
+                new Font("SansSerif", Font.PLAIN, 13)
+        );
 
-        JLabel emailLabel = new JLabel("Email:");
-        JLabel phoneLabel = new JLabel("Phone:");
+        roleComboBox.setBackground(Color.WHITE);
+
+        nameField = createTextField();
+        emailField = createTextField();
+        phoneField = createTextField();
+
+        JLabel emailLabel = createLabel("Email:");
+        JLabel phoneLabel = createLabel("Phone:");
 
         registerButton = new JButton("REGISTER");
         backButton = new JButton("BACK TO LOGIN");
 
+        styleButton(registerButton);
+        styleButton(backButton);
+
+        // Original layout — unchanged
         panel.add(usernameLabel);
         panel.add(usernameField);
 
@@ -99,13 +141,96 @@ public class RegisterFrame extends JFrame {
         add(titleLabel, BorderLayout.NORTH);
         add(panel, BorderLayout.CENTER);
 
-        roleComboBox.addActionListener(e -> updateNameLabel());
+        roleComboBox.addActionListener(
+                e -> updateNameLabel()
+        );
 
-        registerButton.addActionListener(e -> register());
+        registerButton.addActionListener(
+                e -> register()
+        );
 
-        backButton.addActionListener(e -> {
-            dispose();
-        });
+        backButton.addActionListener(
+                e -> openLogin()
+        );
+    }
+
+    private JLabel createLabel(String text) {
+
+        JLabel label = new JLabel(text);
+
+        label.setFont(
+                new Font("SansSerif", Font.BOLD, 13)
+        );
+
+        label.setForeground(TEXT_COLOR);
+
+        return label;
+    }
+
+    private JTextField createTextField() {
+
+        JTextField field = new JTextField();
+
+        styleTextField(field);
+
+        return field;
+    }
+
+    private void styleTextField(JTextField field) {
+
+        field.setFont(
+                new Font("SansSerif", Font.PLAIN, 13)
+        );
+
+        field.setBackground(Color.WHITE);
+        field.setForeground(TEXT_COLOR);
+
+        field.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                new Color(210, 215, 223)
+                        ),
+                        BorderFactory.createEmptyBorder(
+                                4, 6, 4, 6
+                        )
+                )
+        );
+    }
+
+    private void styleButton(JButton button) {
+
+        button.setFont(
+                new Font("SansSerif", Font.BOLD, 12)
+        );
+
+        button.setForeground(Color.WHITE);
+        button.setBackground(BUTTON_COLOR);
+
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+
+        button.setCursor(
+                new Cursor(Cursor.HAND_CURSOR)
+        );
+
+        button.addMouseListener(
+                new java.awt.event.MouseAdapter() {
+
+                    @Override
+                    public void mouseEntered(
+                            java.awt.event.MouseEvent e) {
+
+                        button.setBackground(BUTTON_HOVER);
+                    }
+
+                    @Override
+                    public void mouseExited(
+                            java.awt.event.MouseEvent e) {
+
+                        button.setBackground(BUTTON_COLOR);
+                    }
+                }
+        );
     }
 
     private void updateNameLabel() {
@@ -123,10 +248,13 @@ public class RegisterFrame extends JFrame {
 
     private void register() {
 
-        String username = usernameField.getText().trim();
+        String username =
+                usernameField.getText().trim();
 
         String password =
-                new String(passwordField.getPassword());
+                new String(
+                        passwordField.getPassword()
+                );
 
         String role =
                 (String) roleComboBox.getSelectedItem();
@@ -157,45 +285,75 @@ public class RegisterFrame extends JFrame {
 
         boolean success;
 
-        if (role.equals("Job Seeker")) {
+        try {
 
-            success = registerController.registerJobSeeker(
-                    username,
-                    password,
-                    name,
-                    email,
-                    phone
-            );
+            if (role.equals("Job Seeker")) {
 
-        } else {
+                success =
+                        registerController.registerJobSeeker(
+                                username,
+                                password,
+                                name,
+                                email,
+                                phone
+                        );
 
-            success = registerController.registerEmployer(
-                    username,
-                    password,
-                    name,
-                    email,
-                    phone
-            );
-        }
+            } else {
 
-        if (success) {
+                success =
+                        registerController.registerEmployer(
+                                username,
+                                password,
+                                name,
+                                email,
+                                phone
+                        );
+            }
+
+            if (success) {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Registration successful!\n"
+                                + "You can now login to JobFit.",
+                        "Registration Successful",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+                openLogin();
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Registration failed.\n"
+                                + "Username may already exist.",
+                        "Registration Failed",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+
+        } catch (Exception ex) {
+
+            ex.printStackTrace();
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Registration successful!"
-            );
-
-            dispose();
-
-        } else {
-
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Registration failed.\n"
-                            + "Username may already exist.",
-                    "Registration Failed",
+                    "An error occurred during registration.\n\n"
+                            + ex.getMessage(),
+                    "Registration Error",
                     JOptionPane.ERROR_MESSAGE
             );
         }
+    }
+
+    private void openLogin() {
+
+        dispose();
+
+        LoginFrame loginFrame =
+                new LoginFrame();
+
+        loginFrame.setVisible(true);
     }
 }
