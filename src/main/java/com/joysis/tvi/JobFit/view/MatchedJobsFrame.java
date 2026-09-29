@@ -32,7 +32,7 @@ public class MatchedJobsFrame extends JFrame {
         controller = new MatchReportController();
 
         setTitle("JobFit - Matched Jobs");
-        setSize(900, 550);
+        setSize(1000, 550);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -185,6 +185,8 @@ public class MatchedJobsFrame extends JFrame {
                         jobSeekerId
                 );
 
+        loadMatches();
+
         if (reports.isEmpty()) {
 
             JOptionPane.showMessageDialog(
@@ -194,12 +196,8 @@ public class MatchedJobsFrame extends JFrame {
                     JOptionPane.INFORMATION_MESSAGE
             );
 
-            tableModel.setRowCount(0);
-
             return;
         }
-
-        loadMatches();
 
         JOptionPane.showMessageDialog(
                 this,

@@ -1,5 +1,6 @@
 package com.joysis.tvi.JobFit.view;
 
+import com.joysis.tvi.JobFit.config.DatabaseConnection;
 import com.joysis.tvi.JobFit.controller.MatchReportController;
 import com.joysis.tvi.JobFit.model.Job;
 import com.joysis.tvi.JobFit.model.MatchReport;
@@ -7,6 +8,9 @@ import com.joysis.tvi.JobFit.model.MatchReport;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 
 public class MatchReportsFrame extends JFrame {
@@ -16,12 +20,15 @@ public class MatchReportsFrame extends JFrame {
     private JTable reportsTable;
     private DefaultTableModel tableModel;
 
+    private JButton refreshButton;
+    private JButton closeButton;
+
     public MatchReportsFrame() {
 
         controller = new MatchReportController();
 
         setTitle("JobFit - Match Reports");
-        setSize(900, 500);
+        setSize(1000, 550);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -51,22 +58,39 @@ public class MatchReportsFrame extends JFrame {
                 new Font("Arial", Font.BOLD, 24)
         );
 
+        JLabel infoLabel =
+                new JLabel(
+                        "Job matching results based on required and user skills.",
+                        SwingConstants.CENTER
+                );
+
+        infoLabel.setFont(
+                new Font("Arial", Font.PLAIN, 14)
+        );
+
+        JPanel headerPanel =
+                new JPanel(new GridLayout(2, 1));
+
+        headerPanel.add(titleLabel);
+        headerPanel.add(infoLabel);
+
         tableModel =
                 new DefaultTableModel(
                         new Object[]{
                                 "Report ID",
-                                "Job ID",
                                 "Job Title",
-                                "Job Seeker ID",
+                                "Job Seeker",
                                 "Match Score",
                                 "Created At"
                         },
                         0
                 ) {
+
                     @Override
                     public boolean isCellEditable(
                             int row,
                             int column) {
+
                         return false;
                     }
                 };
@@ -76,13 +100,17 @@ public class MatchReportsFrame extends JFrame {
 
         reportsTable.setRowHeight(30);
 
+        reportsTable.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION
+        );
+
         JScrollPane scrollPane =
                 new JScrollPane(reportsTable);
 
-        JButton refreshButton =
+        refreshButton =
                 new JButton("REFRESH");
 
-        JButton closeButton =
+        closeButton =
                 new JButton("CLOSE");
 
         JPanel buttonPanel =
@@ -98,7 +126,7 @@ public class MatchReportsFrame extends JFrame {
         buttonPanel.add(closeButton);
 
         mainPanel.add(
-                titleLabel,
+                headerPanel,
                 BorderLayout.NORTH
         );
 
@@ -142,6 +170,11 @@ public class MatchReportsFrame extends JFrame {
                             ? job.getTitle()
                             : "Unknown Job";
 
+            String jobSeekerName =
+                    getJobSeekerName(
+                            report.getJobSeekerId()
+                    );
+
             String matchScore =
                     String.format(
                             "%.2f%%",
@@ -156,13 +189,52 @@ public class MatchReportsFrame extends JFrame {
             tableModel.addRow(
                     new Object[]{
                             report.getId(),
-                            report.getJobId(),
                             jobTitle,
-                            report.getJobSeekerId(),
+                            jobSeekerName,
                             matchScore,
                             createdAt
                     }
             );
         }
+    }
+
+    private String getJobSeekerName(
+            int jobSeekerId) {
+
+        String sql = """
+                SELECT full_name
+                FROM Job_Seeker
+                WHERE id = ?
+                """;
+
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(
+                    1,
+                    jobSeekerId
+            );
+
+            ResultSet resultSet =
+                    statement.executeQuery();
+
+            if (resultSet.next()) {
+
+                return resultSet.getString(
+                        "full_name"
+                );
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+
+        return "Unknown Job Seeker";
     }
 }

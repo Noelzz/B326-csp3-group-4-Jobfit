@@ -2,6 +2,7 @@ package com.joysis.tvi.JobFit.repository;
 
 import com.joysis.tvi.JobFit.config.DatabaseConnection;
 import com.joysis.tvi.JobFit.model.User;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,7 +24,6 @@ public class UserRepository {
                 SELECT id, username, password, role
                 FROM Users
                 WHERE username = ?
-                  AND password = ?
                 """;
 
         try (
@@ -35,19 +35,27 @@ public class UserRepository {
         ) {
 
             statement.setString(1, username);
-            statement.setString(2, password);
 
             ResultSet resultSet =
                     statement.executeQuery();
 
             if (resultSet.next()) {
 
-                return new User(
-                        resultSet.getInt("id"),
-                        resultSet.getString("username"),
-                        resultSet.getString("password"),
-                        resultSet.getString("role")
-                );
+                String storedPassword =
+                        resultSet.getString("password");
+
+                if (BCrypt.checkpw(
+                        password,
+                        storedPassword
+                )) {
+
+                    return new User(
+                            resultSet.getInt("id"),
+                            resultSet.getString("username"),
+                            storedPassword,
+                            resultSet.getString("role")
+                    );
+                }
             }
 
         } catch (Exception e) {
@@ -142,8 +150,7 @@ public class UserRepository {
     }
 
     // =========================
-    // CHECK USERNAME
-    // EXCLUDING CURRENT USER
+    // CHECK USERNAME EXCEPT ID
     // =========================
 
     public boolean usernameExistsExceptId(
@@ -196,19 +203,53 @@ public class UserRepository {
                 VALUES (?, ?, ?)
                 """;
 
+        String hashedPassword =
+                BCrypt.hashpw(
+                        password,
+                        BCrypt.gensalt()
+                );
+
         try (
                 Connection connection =
                         DatabaseConnection.getConnection();
 
                 PreparedStatement statement =
-                        connection.prepareStatement(sql)
+                        connection.prepareStatement(
+                                sql,
+                                java.sql.Statement.RETURN_GENERATED_KEYS
+                        )
         ) {
 
             statement.setString(1, username);
-            statement.setString(2, password);
+            statement.setString(2, hashedPassword);
             statement.setString(3, role);
 
-            return statement.executeUpdate() > 0;
+            int affectedRows =
+                    statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                return false;
+            }
+
+            ResultSet keys =
+                    statement.getGeneratedKeys();
+
+            if (!keys.next()) {
+                return false;
+            }
+
+            int userId =
+                    keys.getInt(1);
+
+            /*
+             * Create the appropriate profile automatically.
+             */
+            return createProfile(
+                    connection,
+                    userId,
+                    role,
+                    username
+            );
 
         } catch (Exception e) {
 
@@ -228,28 +269,275 @@ public class UserRepository {
             String password,
             String role) {
 
-        String sql = """
-                UPDATE Users
-                SET username = ?,
-                    password = ?,
-                    role = ?
-                WHERE id = ?
-                """;
+        Connection connection = null;
 
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
+        try {
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+            connection =
+                    DatabaseConnection.getConnection();
 
-            statement.setString(1, username);
-            statement.setString(2, password);
-            statement.setString(3, role);
-            statement.setInt(4, id);
+            connection.setAutoCommit(false);
 
-            return statement.executeUpdate() > 0;
+            /*
+             * Get the user's previous role.
+             */
+            String oldRole = null;
+
+            String getRoleSql = """
+                    SELECT role
+                    FROM Users
+                    WHERE id = ?
+                    """;
+
+            try (
+                    PreparedStatement statement =
+                            connection.prepareStatement(getRoleSql)
+            ) {
+
+                statement.setInt(1, id);
+
+                ResultSet resultSet =
+                        statement.executeQuery();
+
+                if (resultSet.next()) {
+
+                    oldRole =
+                            resultSet.getString("role");
+
+                } else {
+
+                    connection.rollback();
+                    return false;
+                }
+            }
+
+            /*
+             * Determine whether the supplied password is
+             * already a BCrypt hash.
+             */
+            String passwordToSave;
+
+            if (password != null &&
+                    (password.startsWith("$2a$") ||
+                            password.startsWith("$2b$") ||
+                            password.startsWith("$2y$"))) {
+
+                passwordToSave = password;
+
+            } else {
+
+                passwordToSave =
+                        BCrypt.hashpw(
+                                password,
+                                BCrypt.gensalt()
+                        );
+            }
+
+            String sql = """
+                    UPDATE Users
+                    SET username = ?,
+                        password = ?,
+                        role = ?
+                    WHERE id = ?
+                    """;
+
+            try (
+                    PreparedStatement statement =
+                            connection.prepareStatement(sql)
+            ) {
+
+                statement.setString(
+                        1,
+                        username
+                );
+
+                statement.setString(
+                        2,
+                        passwordToSave
+                );
+
+                statement.setString(
+                        3,
+                        role
+                );
+
+                statement.setInt(
+                        4,
+                        id
+                );
+
+                int affectedRows =
+                        statement.executeUpdate();
+
+                if (affectedRows == 0) {
+
+                    connection.rollback();
+
+                    return false;
+                }
+            }
+
+            /*
+             * If the role changed, create the new profile.
+             */
+            if (!role.equals(oldRole)) {
+
+                boolean profileCreated =
+                        createProfile(
+                                connection,
+                                id,
+                                role,
+                                username
+                        );
+
+                if (!profileCreated) {
+
+                    connection.rollback();
+
+                    return false;
+                }
+            }
+
+            connection.commit();
+
+            return true;
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            try {
+
+                if (connection != null) {
+                    connection.rollback();
+                }
+
+            } catch (Exception rollbackError) {
+
+                rollbackError.printStackTrace();
+            }
+
+            return false;
+
+        } finally {
+
+            try {
+
+                if (connection != null) {
+                    connection.close();
+                }
+
+            } catch (Exception closeError) {
+
+                closeError.printStackTrace();
+            }
+        }
+    }
+
+    // =========================
+    // CREATE PROFILE
+    // =========================
+
+    private boolean createProfile(
+            Connection connection,
+            int userId,
+            String role,
+            String username) {
+
+        try {
+
+            if (role.equals("job_seeker")) {
+
+                String checkSql = """
+                        SELECT id
+                        FROM Job_Seeker
+                        WHERE user_id = ?
+                        """;
+
+                try (
+                        PreparedStatement check =
+                                connection.prepareStatement(checkSql)
+                ) {
+
+                    check.setInt(1, userId);
+
+                    ResultSet resultSet =
+                            check.executeQuery();
+
+                    if (resultSet.next()) {
+                        return true;
+                    }
+                }
+
+                String sql = """
+                        INSERT INTO Job_Seeker
+                        (user_id, full_name, email, phone)
+                        VALUES (?, ?, '', '')
+                        """;
+
+                try (
+                        PreparedStatement statement =
+                                connection.prepareStatement(sql)
+                ) {
+
+                    statement.setInt(1, userId);
+                    statement.setString(2, username);
+
+                    statement.executeUpdate();
+
+                    return true;
+                }
+            }
+
+            if (role.equals("employer")) {
+
+                String checkSql = """
+                        SELECT id
+                        FROM Employer
+                        WHERE user_id = ?
+                        """;
+
+                try (
+                        PreparedStatement check =
+                                connection.prepareStatement(checkSql)
+                ) {
+
+                    check.setInt(1, userId);
+
+                    ResultSet resultSet =
+                            check.executeQuery();
+
+                    if (resultSet.next()) {
+                        return true;
+                    }
+                }
+
+                String sql = """
+                        INSERT INTO Employer
+                        (user_id, company_name, email, phone)
+                        VALUES (?, ?, '', '')
+                        """;
+
+                try (
+                        PreparedStatement statement =
+                                connection.prepareStatement(sql)
+                ) {
+
+                    statement.setInt(1, userId);
+                    statement.setString(2, username);
+
+                    statement.executeUpdate();
+
+                    return true;
+                }
+            }
+
+            /*
+             * Admin accounts do not need a profile table.
+             */
+            if (role.equals("admin")) {
+                return true;
+            }
 
         } catch (Exception e) {
 
@@ -322,14 +610,27 @@ public class UserRepository {
 
             connection.setAutoCommit(false);
 
+            String hashedPassword =
+                    BCrypt.hashpw(
+                            password,
+                            BCrypt.gensalt()
+                    );
+
             PreparedStatement userStatement =
                     connection.prepareStatement(
                             userSql,
                             java.sql.Statement.RETURN_GENERATED_KEYS
                     );
 
-            userStatement.setString(1, username);
-            userStatement.setString(2, password);
+            userStatement.setString(
+                    1,
+                    username
+            );
+
+            userStatement.setString(
+                    2,
+                    hashedPassword
+            );
 
             userStatement.executeUpdate();
 
@@ -441,14 +742,27 @@ public class UserRepository {
 
             connection.setAutoCommit(false);
 
+            String hashedPassword =
+                    BCrypt.hashpw(
+                            password,
+                            BCrypt.gensalt()
+                    );
+
             PreparedStatement userStatement =
                     connection.prepareStatement(
                             userSql,
                             java.sql.Statement.RETURN_GENERATED_KEYS
                     );
 
-            userStatement.setString(1, username);
-            userStatement.setString(2, password);
+            userStatement.setString(
+                    1,
+                    username
+            );
+
+            userStatement.setString(
+                    2,
+                    hashedPassword
+            );
 
             userStatement.executeUpdate();
 

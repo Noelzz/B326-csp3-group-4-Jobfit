@@ -108,25 +108,33 @@ public class AdminDashboard extends JFrame {
 
         add(mainPanel);
 
+        // =========================
+        // MANAGE USERS
+        // =========================
+
         manageUsersButton.addActionListener(e -> {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "User management will be implemented next.",
-                    "JobFit",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+            ManageUsersFrame frame =
+                    new ManageUsersFrame(user);
+
+            frame.setVisible(true);
         });
+
+        // =========================
+        // MANAGE SKILLS
+        // =========================
 
         manageSkillsButton.addActionListener(e -> {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Skill management will be implemented next.",
-                    "JobFit",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+            ManageSkillsFrame frame =
+                    new ManageSkillsFrame();
+
+            frame.setVisible(true);
         });
+
+        // =========================
+        // MANAGE JOB CATEGORIES
+        // =========================
 
         manageCategoriesButton.addActionListener(e -> {
 
@@ -136,23 +144,33 @@ public class AdminDashboard extends JFrame {
             frame.setVisible(true);
         });
 
+        // =========================
+        // MANAGE JOBS
+        // =========================
+
         manageJobsButton.addActionListener(e -> {
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Job management will be implemented next.",
-                    "JobFit",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+            AdminManageJobsFrame frame =
+                    new AdminManageJobsFrame();
+
+            frame.setVisible(true);
         });
+
+        // =========================
+        // MATCH REPORTS
+        // =========================
 
         matchReportsButton.addActionListener(e -> {
 
-            MatchReportsFrame matchReportsFrame =
+            MatchReportsFrame frame =
                     new MatchReportsFrame();
 
-            matchReportsFrame.setVisible(true);
+            frame.setVisible(true);
         });
+
+        // =========================
+        // LOGOUT
+        // =========================
 
         logoutButton.addActionListener(
                 e -> logout()

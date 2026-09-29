@@ -23,19 +23,38 @@ public class MatchReportRepository {
                 created_at = VALUES(created_at)
                 """;
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
 
-            statement.setInt(1, report.getJobId());
-            statement.setInt(2, report.getJobSeekerId());
-            statement.setDouble(3, report.getMatchScore());
-            statement.setObject(4, report.getCreatedAt());
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(
+                    1,
+                    report.getJobId()
+            );
+
+            statement.setInt(
+                    2,
+                    report.getJobSeekerId()
+            );
+
+            statement.setDouble(
+                    3,
+                    report.getMatchScore()
+            );
+
+            statement.setObject(
+                    4,
+                    report.getCreatedAt()
+            );
 
             return statement.executeUpdate() > 0;
 
         } catch (Exception e) {
+
             e.printStackTrace();
         }
 
@@ -45,7 +64,8 @@ public class MatchReportRepository {
     public List<MatchReport> getMatchReportsByJobSeeker(
             int jobSeekerId) {
 
-        List<MatchReport> reports = new ArrayList<>();
+        List<MatchReport> reports =
+                new ArrayList<>();
 
         String sql = """
                 SELECT
@@ -59,12 +79,18 @@ public class MatchReportRepository {
                 ORDER BY match_score DESC
                 """;
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
 
-            statement.setInt(1, jobSeekerId);
+                PreparedStatement statement =
+                        connection.prepareStatement(sql)
+        ) {
+
+            statement.setInt(
+                    1,
+                    jobSeekerId
+            );
 
             ResultSet resultSet =
                     statement.executeQuery();
@@ -72,7 +98,8 @@ public class MatchReportRepository {
             while (resultSet.next()) {
 
                 LocalDateTime createdAt =
-                        resultSet.getTimestamp("created_at")
+                        resultSet
+                                .getTimestamp("created_at")
                                 .toLocalDateTime();
 
                 MatchReport report =
@@ -88,6 +115,7 @@ public class MatchReportRepository {
             }
 
         } catch (Exception e) {
+
             e.printStackTrace();
         }
 
@@ -96,30 +124,36 @@ public class MatchReportRepository {
 
     public List<MatchReport> getAllMatchReports() {
 
-        List<MatchReport> reports = new ArrayList<>();
+        List<MatchReport> reports =
+                new ArrayList<>();
 
         String sql = """
                 SELECT
-                    id,
-                    job_id,
-                    job_seeker_id,
-                    match_score,
-                    created_at
-                FROM Match_Reports
-                ORDER BY match_score DESC
+                    mr.id,
+                    mr.job_id,
+                    mr.job_seeker_id,
+                    mr.match_score,
+                    mr.created_at
+                FROM Match_Reports mr
+                ORDER BY mr.match_score DESC
                 """;
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql);
-             ResultSet resultSet =
-                     statement.executeQuery()) {
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
+
+                PreparedStatement statement =
+                        connection.prepareStatement(sql);
+
+                ResultSet resultSet =
+                        statement.executeQuery()
+        ) {
 
             while (resultSet.next()) {
 
                 LocalDateTime createdAt =
-                        resultSet.getTimestamp("created_at")
+                        resultSet
+                                .getTimestamp("created_at")
                                 .toLocalDateTime();
 
                 MatchReport report =
@@ -135,6 +169,7 @@ public class MatchReportRepository {
             }
 
         } catch (Exception e) {
+
             e.printStackTrace();
         }
 
