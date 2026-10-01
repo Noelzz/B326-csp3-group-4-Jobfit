@@ -19,7 +19,7 @@ Capstone 3 for NCIII Java Programming
 
 ## How to Run
 1. Start XAMPP → MySQL
-2. Import `jobfit.sql` into phpMyAdmin
+2. Import `JobFitDB.sql` into phpMyAdmin
 3. Open the project in IntelliJ
 4. Run `App.java`
 
