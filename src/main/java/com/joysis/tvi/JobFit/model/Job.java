@@ -10,9 +10,6 @@ public class Job {
     private String location;
     private double salary;
 
-    public Job() {
-    }
-
     public Job(
             int id,
             int employerId,
@@ -67,24 +64,8 @@ public class Job {
         this.employerId = employerId;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
-    }
-
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public void setSalary(double salary) {
-        this.salary = salary;
     }
 
     @Override

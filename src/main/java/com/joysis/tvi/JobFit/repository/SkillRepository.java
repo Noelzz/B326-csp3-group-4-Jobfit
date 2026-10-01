@@ -11,30 +11,18 @@ import java.util.List;
 
 public class SkillRepository {
 
+    //Get all skills
     public List<Skill> getAllSkills() {
 
         List<Skill> skills = new ArrayList<>();
+        String sql = "SELECT id, name FROM Skills ORDER BY name";
 
-        String sql = """
-                SELECT id, name
-                FROM Skills
-                ORDER BY name
-                """;
-
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql);
-             ResultSet resultSet =
-                     statement.executeQuery()) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-
-                Skill skill = new Skill(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name")
-                );
-
+                Skill skill = new Skill(resultSet.getInt("id"), resultSet.getString("name"));
                 skills.add(skill);
             }
 
@@ -45,17 +33,13 @@ public class SkillRepository {
         return skills;
     }
 
+    //Add Skills
     public boolean addSkill(String name) {
 
-        String sql = """
-                INSERT INTO Skills (name)
-                VALUES (?)
-                """;
+        String sql = "INSERT INTO Skills (name) VALUES (?)";
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, name);
 
@@ -68,18 +52,13 @@ public class SkillRepository {
         return false;
     }
 
+    //Update Skills
     public boolean updateSkill(int id, String name) {
 
-        String sql = """
-                UPDATE Skills
-                SET name = ?
-                WHERE id = ?
-                """;
+        String sql = "UPDATE Skills SET name = ? WHERE id = ?";
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, name);
             statement.setInt(2, id);
@@ -93,17 +72,13 @@ public class SkillRepository {
         return false;
     }
 
+    //Delete skills
     public boolean deleteSkill(int id) {
 
-        String sql = """
-                DELETE FROM Skills
-                WHERE id = ?
-                """;
+        String sql = "DELETE FROM Skills WHERE id = ?";
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
 
@@ -114,5 +89,27 @@ public class SkillRepository {
         }
 
         return false;
+    }
+
+    //Get skill by names
+    public Skill getSkillByName(String name) {
+
+        String sql = "SELECT id, name FROM Skills WHERE LOWER(name) = LOWER(?)";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                return new Skill(resultSet.getInt("id"), resultSet.getString("name")
+                );
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

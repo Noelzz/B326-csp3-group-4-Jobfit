@@ -7,61 +7,29 @@ import java.util.List;
 
 public class UserController {
 
-    private final UserService service;
+    private final UserService userService;
 
     public UserController() {
-        service = new UserService();
+        userService = new UserService();
     }
-
-    // =========================
-    // GET ALL USERS
-    // =========================
 
     public List<User> getAllUsers() {
-
-        return service.getAllUsers();
+        return userService.getAllUsers();
     }
 
-    // =========================
-    // ADD USER
-    // =========================
-
-    public boolean addUser(
-            String username,
-            String password,
-            String role) {
-
-        return service.addUser(
-                username,
-                password,
-                role
-        );
+    public String addUser(String username, String password, String role) {
+        return userService.addUser(username, password, role);
     }
 
-    // =========================
-    // UPDATE USER
-    // =========================
-
-    public boolean updateUser(
-            int id,
-            String username,
-            String password,
-            String role) {
-
-        return service.updateUser(
-                id,
-                username,
-                password,
-                role
-        );
+    public String updateUser(int id, String username, String password, String role) {
+        return userService.updateUser(id, username, password, role);
     }
 
-    // =========================
-    // DELETE USER
-    // =========================
+    public String deleteUser(int id) {
+        return userService.deleteUser(id);
+    }
 
-    public boolean deleteUser(int id) {
-
-        return service.deleteUser(id);
+    public String changePassword(int userId, String currentPassword, String newPassword, String confirmPassword) {
+        return userService.changePassword(userId, currentPassword, newPassword, confirmPassword);
     }
 }

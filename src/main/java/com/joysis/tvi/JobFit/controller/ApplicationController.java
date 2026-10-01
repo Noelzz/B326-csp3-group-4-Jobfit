@@ -1,7 +1,7 @@
 package com.joysis.tvi.JobFit.controller;
 
-import com.joysis.tvi.JobFit.model.Application;
 import com.joysis.tvi.JobFit.model.Applicant;
+import com.joysis.tvi.JobFit.model.Application;
 import com.joysis.tvi.JobFit.service.ApplicationService;
 
 import java.util.List;

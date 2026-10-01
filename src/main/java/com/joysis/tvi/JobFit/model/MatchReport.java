@@ -10,9 +10,6 @@ public class MatchReport {
     private double matchScore;
     private LocalDateTime createdAt;
 
-    public MatchReport() {
-    }
-
     public MatchReport(
             int id,
             int jobId,
@@ -57,13 +54,5 @@ public class MatchReport {
 
     public void setJobSeekerId(int jobSeekerId) {
         this.jobSeekerId = jobSeekerId;
-    }
-
-    public void setMatchScore(double matchScore) {
-        this.matchScore = matchScore;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 }

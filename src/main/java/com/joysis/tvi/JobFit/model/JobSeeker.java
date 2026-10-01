@@ -8,9 +8,6 @@ public class JobSeeker {
     private String email;
     private String phone;
 
-    public JobSeeker() {
-    }
-
     public JobSeeker(
             int id,
             int userId,
@@ -51,10 +48,6 @@ public class JobSeeker {
 
     public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public void setEmail(String email) {

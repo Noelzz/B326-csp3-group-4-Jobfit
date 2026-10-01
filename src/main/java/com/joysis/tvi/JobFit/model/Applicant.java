@@ -1,6 +1,8 @@
 package com.joysis.tvi.JobFit.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Applicant {
 
@@ -14,8 +16,7 @@ public class Applicant {
     private LocalDate applicationDate;
     private String status;
 
-    public Applicant() {
-    }
+    private List<Skill> skills = new ArrayList<>();
 
     public Applicant(
             int applicationId,
@@ -75,24 +76,12 @@ public class Applicant {
         return status;
     }
 
-    public void setApplicationId(int applicationId) {
-        this.applicationId = applicationId;
-    }
-
     public void setJobId(int jobId) {
         this.jobId = jobId;
     }
 
     public void setJobSeekerId(int jobSeekerId) {
         this.jobSeekerId = jobSeekerId;
-    }
-
-    public void setJobTitle(String jobTitle) {
-        this.jobTitle = jobTitle;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
     }
 
     public void setEmail(String email) {
@@ -103,11 +92,11 @@ public class Applicant {
         this.phone = phone;
     }
 
-    public void setApplicationDate(LocalDate applicationDate) {
-        this.applicationDate = applicationDate;
+    public List<Skill> getSkills() {
+        return skills;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setSkills(List<Skill> skills) {
+        this.skills = skills;
     }
 }

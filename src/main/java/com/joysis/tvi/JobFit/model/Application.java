@@ -10,16 +10,13 @@ public class Application {
     private LocalDate applicationDate;
     private String status;
 
-    public Application() {
-    }
-
     public Application(
             int id,
             int jobId,
             int jobSeekerId,
             LocalDate applicationDate,
-            String status) {
-
+            String status
+    ) {
         this.id = id;
         this.jobId = jobId;
         this.jobSeekerId = jobSeekerId;
@@ -57,13 +54,5 @@ public class Application {
 
     public void setJobSeekerId(int jobSeekerId) {
         this.jobSeekerId = jobSeekerId;
-    }
-
-    public void setApplicationDate(LocalDate applicationDate) {
-        this.applicationDate = applicationDate;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 }

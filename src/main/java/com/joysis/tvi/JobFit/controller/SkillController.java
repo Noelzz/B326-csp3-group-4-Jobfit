@@ -34,16 +34,14 @@ public class SkillController {
     }
 
     public boolean addSkill(int jobSeekerId, int skillId) {
-        return service.addSkill(
-                jobSeekerId,
-                skillId
-        );
+        return service.addSkill(jobSeekerId, skillId);
     }
 
     public boolean removeSkill(int jobSeekerId, int skillId) {
-        return service.removeSkill(
-                jobSeekerId,
-                skillId
-        );
+        return service.removeSkill(jobSeekerId, skillId);
+    }
+
+    public Skill findOrCreateSkill(String name) {
+        return service.findOrCreateSkill(name);
     }
 }

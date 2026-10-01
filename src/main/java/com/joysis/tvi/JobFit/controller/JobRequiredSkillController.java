@@ -10,36 +10,18 @@ public class JobRequiredSkillController {
     private final JobRequiredSkillService service;
 
     public JobRequiredSkillController() {
-
-        service =
-                new JobRequiredSkillService();
+        service = new JobRequiredSkillService();
     }
 
-    public List<JobRequiredSkill> getRequiredSkillsByJob(
-            int jobId) {
-
-        return service.getRequiredSkillsByJob(
-                jobId
-        );
+    public List<JobRequiredSkill> getRequiredSkillsByJob(int jobId) {
+        return service.getRequiredSkillsByJob(jobId);
     }
 
-    public boolean addRequiredSkill(
-            int jobId,
-            int skillId) {
-
-        return service.addRequiredSkill(
-                jobId,
-                skillId
-        );
+    public boolean addRequiredSkill(int jobId, int skillId) {
+        return service.addRequiredSkill(jobId, skillId);
     }
 
-    public boolean removeRequiredSkill(
-            int jobId,
-            int skillId) {
-
-        return service.removeRequiredSkill(
-                jobId,
-                skillId
-        );
+    public boolean removeRequiredSkill(int jobId, int skillId) {
+        return service.removeRequiredSkill(jobId, skillId);
     }
 }

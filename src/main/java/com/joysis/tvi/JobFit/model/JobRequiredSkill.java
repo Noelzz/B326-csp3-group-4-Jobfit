@@ -7,9 +7,6 @@ public class JobRequiredSkill {
     private int skillId;
     private String skillName;
 
-    public JobRequiredSkill() {
-    }
-
     public JobRequiredSkill(
             int id,
             int jobId,
@@ -44,14 +41,6 @@ public class JobRequiredSkill {
 
     public void setJobId(int jobId) {
         this.jobId = jobId;
-    }
-
-    public void setSkillId(int skillId) {
-        this.skillId = skillId;
-    }
-
-    public void setSkillName(String skillName) {
-        this.skillName = skillName;
     }
 
     @Override

@@ -8,9 +8,6 @@ public class Employer {
     private String email;
     private String phone;
 
-    public Employer() {
-    }
-
     public Employer(
             int id,
             int userId,
@@ -51,10 +48,6 @@ public class Employer {
 
     public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
     }
 
     public void setEmail(String email) {

@@ -11,37 +11,24 @@ import java.util.List;
 
 public class JobRequiredSkillRepository {
 
-    public List<JobRequiredSkill> getRequiredSkillsByJob(
-            int jobId) {
+    // Get required skills by job
+    public List<JobRequiredSkill> getRequiredSkillsByJob(int jobId) {
 
-        List<JobRequiredSkill> skills =
-                new ArrayList<>();
+        List<JobRequiredSkill> skills = new ArrayList<>();
 
         String sql = """
-                SELECT
-                    jrs.id,
-                    jrs.job_id,
-                    jrs.skill_id,
-                    s.name AS skill_name
-                FROM Job_Required_Skills jrs
-                INNER JOIN Skills s
-                    ON jrs.skill_id = s.id
-                WHERE jrs.job_id = ?
-                ORDER BY s.name
+                SELECT jrs.id, jrs.job_id, jrs.skill_id, s.name AS skill_name
+                FROM Job_Required_Skills jrs INNER JOIN Skills s ON jrs.skill_id = s.id
+                WHERE jrs.job_id = ? ORDER BY s.name
                 """;
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, jobId);
-
-            ResultSet resultSet =
-                    statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-
                 JobRequiredSkill skill =
                         new JobRequiredSkill(
                                 resultSet.getInt("id"),
@@ -49,32 +36,23 @@ public class JobRequiredSkillRepository {
                                 resultSet.getInt("skill_id"),
                                 resultSet.getString("skill_name")
                         );
-
                 skills.add(skill);
             }
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
         return skills;
     }
 
-    public boolean addRequiredSkill(
-            int jobId,
-            int skillId) {
+    // Add required skill
+    public boolean addRequiredSkill(int jobId, int skillId) {
 
-        String sql = """
-                INSERT INTO Job_Required_Skills
-                (job_id, skill_id)
-                VALUES (?, ?)
-                """;
+        String sql = "INSERT INTO Job_Required_Skills (job_id, skill_id) VALUES (?, ?)";
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, jobId);
             statement.setInt(2, skillId);
@@ -82,27 +60,19 @@ public class JobRequiredSkillRepository {
             return statement.executeUpdate() > 0;
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
         return false;
     }
 
-    public boolean removeRequiredSkill(
-            int jobId,
-            int skillId) {
+    // Remove required skills
+    public boolean removeRequiredSkill(int jobId, int skillId) {
 
-        String sql = """
-                DELETE FROM Job_Required_Skills
-                WHERE job_id = ?
-                  AND skill_id = ?
-                """;
+        String sql = "DELETE FROM Job_Required_Skills WHERE job_id = ? AND skill_id = ?";
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, jobId);
             statement.setInt(2, skillId);
@@ -110,39 +80,27 @@ public class JobRequiredSkillRepository {
             return statement.executeUpdate() > 0;
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
         return false;
     }
 
-    public boolean hasRequiredSkill(
-            int jobId,
-            int skillId) {
+    // Check if a job requires a specific skill
+    public boolean hasRequiredSkill(int jobId, int skillId) {
 
-        String sql = """
-                SELECT id
-                FROM Job_Required_Skills
-                WHERE job_id = ?
-                  AND skill_id = ?
-                """;
+        String sql = "SELECT id FROM Job_Required_Skills WHERE job_id = ? AND skill_id = ?";
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, jobId);
             statement.setInt(2, skillId);
-
-            ResultSet resultSet =
-                    statement.executeQuery();
+            ResultSet resultSet = statement.executeQuery();
 
             return resultSet.next();
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 

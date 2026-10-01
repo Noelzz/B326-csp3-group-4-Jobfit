@@ -1,36 +1,34 @@
 package com.joysis.tvi.JobFit.view;
 
 import com.joysis.tvi.JobFit.config.RoundedButton;
-import com.joysis.tvi.JobFit.controller.JobSeekerController;
+import com.joysis.tvi.JobFit.controller.AdminController;
 import com.joysis.tvi.JobFit.controller.UserController;
-import com.joysis.tvi.JobFit.model.JobSeeker;
+import com.joysis.tvi.JobFit.model.Admin;
 import com.joysis.tvi.JobFit.model.User;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class JobSeekerProfileFrame extends JFrame {
+public class AdminProfileFrame extends JFrame {
 
     private final User user;
-    private final JobSeekerController jobSeekerController;
+    private final AdminController adminController;
     private final UserController userController;
 
-    private JTextField fullNameField;
     private JTextField emailField;
     private JTextField phoneField;
 
-    private String originalFullName;
     private String originalEmail;
     private String originalPhone;
 
-    public JobSeekerProfileFrame(User user) {
+    public AdminProfileFrame(User user) {
 
         this.user = user;
-        this.jobSeekerController = new JobSeekerController();
+        this.adminController = new AdminController();
         this.userController = new UserController();
 
-        setTitle("JobFit - My Profile");
-        setSize(550, 440);
+        setTitle("JobFit - Admin Profile");
+        setSize(500, 420);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -44,27 +42,23 @@ public class JobSeekerProfileFrame extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 40, 25, 40));
 
-        JLabel titleLabel = new JLabel("MY PROFILE", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("ADMIN PROFILE", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
-        JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 15));
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 15));
 
         JLabel usernameLabel = new JLabel("Username:");
-        JLabel fullNameLabel = new JLabel("Full Name:");
         JLabel emailLabel = new JLabel("Email:");
         JLabel phoneLabel = new JLabel("Phone:");
 
-        JTextField usernameDisplay = new JTextField(user.getUsername());
-        usernameDisplay.setEditable(false);
+        JTextField usernameField = new JTextField(user.getUsername());
+        usernameField.setEditable(false);
 
-        fullNameField = new JTextField();
         emailField = new JTextField();
         phoneField = new JTextField();
 
         formPanel.add(usernameLabel);
-        formPanel.add(usernameDisplay);
-        formPanel.add(fullNameLabel);
-        formPanel.add(fullNameField);
+        formPanel.add(usernameField);
         formPanel.add(emailLabel);
         formPanel.add(emailField);
         formPanel.add(phoneLabel);
@@ -74,7 +68,7 @@ public class JobSeekerProfileFrame extends JFrame {
         JButton changePasswordButton = new RoundedButton("PASSWORD");
         JButton backButton = new RoundedButton("BACK");
 
-        Dimension btnSize = new Dimension(130, 38);
+        Dimension btnSize = new Dimension(120, 36);
         updateButton.setPreferredSize(btnSize);
         changePasswordButton.setPreferredSize(btnSize);
         backButton.setPreferredSize(btnSize);
@@ -97,38 +91,29 @@ public class JobSeekerProfileFrame extends JFrame {
 
     private void loadProfile() {
 
-        JobSeeker js = jobSeekerController.getProfile(user.getId());
+        Admin admin = adminController.getProfile(user.getId());
 
-        if (js != null) {
-            originalFullName = js.getFullName();
-            originalEmail = js.getEmail();
-            originalPhone = js.getPhone();
+        if (admin != null) {
+            originalEmail = admin.getEmail();
+            originalPhone = admin.getPhone();
 
-            fullNameField.setText(originalFullName);
             emailField.setText(originalEmail);
             phoneField.setText(originalPhone);
         } else {
-            originalFullName = "";
             originalEmail = "";
             originalPhone = "";
 
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Unable to load your profile.",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            emailField.setText("");
+            phoneField.setText("");
         }
     }
 
     private void updateProfile() {
 
-        String fullName = fullNameField.getText().trim();
         String email = emailField.getText().trim();
         String phone = phoneField.getText().trim();
 
-        if (fullName.equals(originalFullName == null ? "" : originalFullName)
-                && email.equals(originalEmail == null ? "" : originalEmail)
+        if (email.equals(originalEmail == null ? "" : originalEmail)
                 && phone.equals(originalPhone == null ? "" : originalPhone)) {
 
             JOptionPane.showMessageDialog(
@@ -140,27 +125,25 @@ public class JobSeekerProfileFrame extends JFrame {
             return;
         }
 
-        if (fullName.isEmpty() || email.isEmpty()) {
+        if (email.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Full Name and Email are required.",
+                    "Email is required.",
                     "Validation",
                     JOptionPane.WARNING_MESSAGE
             );
             return;
         }
 
-        JobSeeker js = new JobSeeker(0, user.getId(), fullName, email, phone);
-        String error = jobSeekerController.updateProfile(js);
+        String error = adminController.saveProfile(user.getId(), email, phone);
 
         if (error == null) {
-            originalFullName = fullName;
             originalEmail = email;
             originalPhone = phone;
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Profile updated successfully!",
+                    "Admin profile saved successfully!",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );

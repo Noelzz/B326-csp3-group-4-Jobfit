@@ -10,7 +10,7 @@ public class RegisterController {
         registerService = new RegisterService();
     }
 
-    public boolean registerJobSeeker(
+    public String registerJobSeeker(
             String username,
             String password,
             String fullName,
@@ -18,16 +18,11 @@ public class RegisterController {
             String phone) {
 
         return registerService.registerJobSeeker(
-                username,
-                password,
-                fullName,
-                email,
-                phone
+                username, password, fullName, email, phone
         );
     }
 
-
-    public boolean registerEmployer(
+    public String registerEmployer(
             String username,
             String password,
             String companyName,
@@ -35,11 +30,7 @@ public class RegisterController {
             String phone) {
 
         return registerService.registerEmployer(
-                username,
-                password,
-                companyName,
-                email,
-                phone
+                username, password, companyName, email, phone
         );
     }
 }

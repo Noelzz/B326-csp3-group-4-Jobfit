@@ -19,11 +19,11 @@ public class JobSeekerSkillsFrame extends JFrame {
     private final SkillController controller;
 
     private JComboBox<Skill> skillComboBox;
-
     private JTable skillsTable;
     private DefaultTableModel tableModel;
 
     private JButton addButton;
+    private JButton addNewSkillButton;
     private JButton removeButton;
     private JButton refreshButton;
     private JButton closeButton;
@@ -31,7 +31,7 @@ public class JobSeekerSkillsFrame extends JFrame {
     public JobSeekerSkillsFrame(User user) {
 
         this.user = user;
-        controller = new SkillController();
+        this.controller = new SkillController();
 
         setTitle("JobFit - Manage Skills");
         setSize(650, 500);
@@ -47,322 +47,164 @@ public class JobSeekerSkillsFrame extends JFrame {
 
     private void createGUI() {
 
-        JPanel mainPanel =
-                new JPanel(new BorderLayout(10, 10));
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        mainPanel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        20, 30, 20, 30
-                )
-        );
+        JLabel titleLabel = new JLabel("MANAGE MY SKILLS", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
-        // =========================
-        // TITLE
-        // =========================
+        JLabel infoLabel = new JLabel(
+                "Add or remove skills from your profile.",
+                SwingConstants.CENTER);
+        infoLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
-        JLabel titleLabel =
-                new JLabel(
-                        "MANAGE MY SKILLS",
-                        SwingConstants.CENTER
-                );
-
-        titleLabel.setFont(
-                new Font("Arial", Font.BOLD, 24)
-        );
-
-        JLabel infoLabel =
-                new JLabel(
-                        "Add or remove skills from your profile.",
-                        SwingConstants.CENTER
-                );
-
-        infoLabel.setFont(
-                new Font("Arial", Font.PLAIN, 14)
-        );
-
-        JPanel headerPanel =
-                new JPanel(new GridLayout(2, 1));
-
+        JPanel headerPanel = new JPanel(new GridLayout(2, 1));
         headerPanel.add(titleLabel);
         headerPanel.add(infoLabel);
 
-        // =========================
-        // SKILL SELECTION
-        // =========================
+        JPanel selectionPanel = new JPanel(new GridLayout(1, 2, 10, 10));
 
-        JPanel selectionPanel =
-                new JPanel(
-                        new GridLayout(1, 2, 10, 10)
-                );
-
-        JLabel skillLabel =
-                new JLabel("Select Skill:");
-
-        skillComboBox =
-                new JComboBox<>();
+        JLabel skillLabel = new JLabel("Select Skill:");
+        skillComboBox = new JComboBox<>();
 
         selectionPanel.add(skillLabel);
         selectionPanel.add(skillComboBox);
 
-        // =========================
-        // TABLE
-        // =========================
+        tableModel = new DefaultTableModel(
+                new Object[]{"Skill ID", "Skill Name"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
-        tableModel =
-                new DefaultTableModel(
-                        new Object[]{
-                                "Skill ID",
-                                "Skill Name"
-                        },
-                        0
-                ) {
-
-                    @Override
-                    public boolean isCellEditable(
-                            int row,
-                            int column) {
-
-                        return false;
-                    }
-                };
-
-        skillsTable =
-                new JTable(tableModel);
-
+        skillsTable = new JTable(tableModel);
         skillsTable.setRowHeight(30);
+        skillsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        skillsTable.setSelectionMode(
-                ListSelectionModel.SINGLE_SELECTION
-        );
+        JScrollPane scrollPane = new JScrollPane(skillsTable);
 
-        JScrollPane scrollPane =
-                new JScrollPane(skillsTable);
+        addButton = new JButton("ADD SKILL");
+        addNewSkillButton = new JButton("+ ADD NEW SKILL");
+        removeButton = new JButton("REMOVE SKILL");
+        refreshButton = new JButton("REFRESH");
+        closeButton = new JButton("CLOSE");
 
-        // =========================
-        // BUTTONS
-        // =========================
-
-        addButton =
-                new JButton("ADD SKILL");
-
-        removeButton =
-                new JButton("REMOVE SKILL");
-
-        refreshButton =
-                new JButton("REFRESH");
-
-        closeButton =
-                new JButton("CLOSE");
-
-        JPanel buttonPanel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.CENTER,
-                                10,
-                                10
-                        )
-                );
-
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonPanel.add(addButton);
+        buttonPanel.add(addNewSkillButton);
         buttonPanel.add(removeButton);
         buttonPanel.add(refreshButton);
         buttonPanel.add(closeButton);
 
-        // =========================
-        // NORTH PANEL
-        // =========================
+        JPanel northPanel = new JPanel(new BorderLayout(10, 10));
+        northPanel.add(headerPanel, BorderLayout.NORTH);
+        northPanel.add(selectionPanel, BorderLayout.CENTER);
 
-        JPanel northPanel =
-                new JPanel(new BorderLayout(10, 10));
-
-        northPanel.add(
-                headerPanel,
-                BorderLayout.NORTH
-        );
-
-        northPanel.add(
-                selectionPanel,
-                BorderLayout.CENTER
-        );
-
-        // =========================
-        // MAIN PANEL
-        // =========================
-
-        mainPanel.add(
-                northPanel,
-                BorderLayout.NORTH
-        );
-
-        mainPanel.add(
-                scrollPane,
-                BorderLayout.CENTER
-        );
-
-        mainPanel.add(
-                buttonPanel,
-                BorderLayout.SOUTH
-        );
+        mainPanel.add(northPanel, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
 
-        // =========================
-        // BUTTON ACTIONS
-        // =========================
-
-        addButton.addActionListener(
-                e -> addSkill()
-        );
-
-        removeButton.addActionListener(
-                e -> removeSkill()
-        );
-
-        refreshButton.addActionListener(
-                e -> {
-                    loadSkills();
-                    loadJobSeekerSkills();
-                }
-        );
-
-        closeButton.addActionListener(
-                e -> dispose()
-        );
+        addButton.addActionListener(e -> addSkill());
+        addNewSkillButton.addActionListener(e -> addNewSkill());
+        removeButton.addActionListener(e -> removeSkill());
+        refreshButton.addActionListener(e -> {
+            loadSkills();
+            loadJobSeekerSkills();
+        });
+        closeButton.addActionListener(e -> dispose());
     }
-
-    // =========================
-    // LOAD ALL AVAILABLE SKILLS
-    // =========================
 
     private void loadSkills() {
 
         skillComboBox.removeAllItems();
 
-        List<Skill> skills =
-                controller.getAllSkills();
+        List<Skill> skills = controller.getAllSkills();
 
         for (Skill skill : skills) {
-
             skillComboBox.addItem(skill);
         }
     }
-
-    // =========================
-    // LOAD JOB SEEKER SKILLS
-    // =========================
 
     private void loadJobSeekerSkills() {
 
         tableModel.setRowCount(0);
 
-        int jobSeekerId =
-                getJobSeekerId();
+        int jobSeekerId = getJobSeekerId();
 
         if (jobSeekerId <= 0) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Job seeker profile was not found.",
                     "JobFit",
                     JOptionPane.ERROR_MESSAGE
             );
-
             return;
         }
 
-        List<Skill> skills =
-                controller.getJobSeekerSkills(
-                        jobSeekerId
-                );
+        List<Skill> skills = controller.getJobSeekerSkills(jobSeekerId);
 
         for (Skill skill : skills) {
-
-            tableModel.addRow(
-                    new Object[]{
-                            skill.getId(),
-                            skill.getName()
-                    }
-            );
+            tableModel.addRow(new Object[]{
+                    skill.getId(),
+                    skill.getName()
+            });
         }
     }
 
-    // =========================
-    // ADD SKILL
-    // =========================
-
     private void addSkill() {
 
-        Skill selectedSkill =
-                (Skill) skillComboBox.getSelectedItem();
+        Skill selectedSkill = (Skill) skillComboBox.getSelectedItem();
 
         if (selectedSkill == null) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a skill.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        int jobSeekerId =
-                getJobSeekerId();
+        int jobSeekerId = getJobSeekerId();
 
         if (jobSeekerId <= 0) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Job seeker profile was not found.",
                     "JobFit",
                     JOptionPane.ERROR_MESSAGE
             );
-
             return;
         }
 
-        // Check whether skill is already added
-        List<Skill> existingSkills =
-                controller.getJobSeekerSkills(
-                        jobSeekerId
-                );
+        List<Skill> existingSkills = controller.getJobSeekerSkills(jobSeekerId);
 
         for (Skill skill : existingSkills) {
-
-            if (skill.getId() ==
-                    selectedSkill.getId()) {
-
+            if (skill.getId() == selectedSkill.getId()) {
                 JOptionPane.showMessageDialog(
                         this,
                         "This skill is already in your profile.",
                         "JobFit",
                         JOptionPane.WARNING_MESSAGE
                 );
-
                 return;
             }
         }
 
-        boolean success =
-                controller.addSkill(
-                        jobSeekerId,
-                        selectedSkill.getId()
-                );
+        boolean success = controller.addSkill(jobSeekerId, selectedSkill.getId());
 
         if (success) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Skill added successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
-
             loadJobSeekerSkills();
-
         } else {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Failed to add skill.",
@@ -372,86 +214,55 @@ public class JobSeekerSkillsFrame extends JFrame {
         }
     }
 
-    // =========================
-    // REMOVE SKILL
-    // =========================
-
     private void removeSkill() {
 
-        int selectedRow =
-                skillsTable.getSelectedRow();
+        int selectedRow = skillsTable.getSelectedRow();
 
         if (selectedRow == -1) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a skill first.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        int skillId =
-                (int) tableModel.getValueAt(
-                        selectedRow,
-                        0
-                );
+        int skillId = (int) tableModel.getValueAt(selectedRow, 0);
+        String skillName = tableModel.getValueAt(selectedRow, 1).toString();
 
-        String skillName =
-                tableModel.getValueAt(
-                        selectedRow,
-                        1
-                ).toString();
+        int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Remove \"" + skillName + "\" from your profile?",
+                "Confirm Remove",
+                JOptionPane.YES_NO_OPTION
+        );
 
-        int choice =
-                JOptionPane.showConfirmDialog(
-                        this,
-                        "Remove \"" + skillName
-                                + "\" from your profile?",
-                        "Confirm Remove",
-                        JOptionPane.YES_NO_OPTION
-                );
+        if (choice != JOptionPane.YES_OPTION) return;
 
-        if (choice != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        int jobSeekerId =
-                getJobSeekerId();
+        int jobSeekerId = getJobSeekerId();
 
         if (jobSeekerId <= 0) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Job seeker profile was not found.",
                     "JobFit",
                     JOptionPane.ERROR_MESSAGE
             );
-
             return;
         }
 
-        boolean success =
-                controller.removeSkill(
-                        jobSeekerId,
-                        skillId
-                );
+        boolean success = controller.removeSkill(jobSeekerId, skillId);
 
         if (success) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Skill removed successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
-
             loadJobSeekerSkills();
-
         } else {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Failed to remove skill.",
@@ -461,41 +272,115 @@ public class JobSeekerSkillsFrame extends JFrame {
         }
     }
 
-    // =========================
-    // GET JOB SEEKER ID
-    // =========================
-
     private int getJobSeekerId() {
 
-        String sql =
-                "SELECT id FROM Job_Seeker WHERE user_id = ?";
+        String sql = "SELECT id FROM Job_Seeker WHERE user_id = ?";
 
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+            statement.setInt(1, user.getId());
 
-            statement.setInt(
-                    1,
-                    user.getId()
-            );
-
-            ResultSet resultSet =
-                    statement.executeQuery();
-
+            ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-
                 return resultSet.getInt("id");
             }
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
-
         return 0;
+    }
+
+    private void addNewSkill() {
+
+        String name = JOptionPane.showInputDialog(
+                this,
+                "Enter new skill name:",
+                "Add New Skill",
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (name == null) return;
+
+        name = name.trim();
+
+        if (name.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Skill name cannot be empty.",
+                    "JobFit",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        if (name.length() > 100) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Skill name is too long (max 100 characters).",
+                    "JobFit",
+                    JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        Skill skill = controller.findOrCreateSkill(name);
+
+        if (skill == null) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Failed to add skill. Please try again.",
+                    "JobFit",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        int jobSeekerId = getJobSeekerId();
+
+        if (jobSeekerId <= 0) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Job seeker profile was not found.",
+                    "JobFit",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        List<Skill> existingSkills = controller.getJobSeekerSkills(jobSeekerId);
+
+        for (Skill s : existingSkills) {
+            if (s.getId() == skill.getId()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "This skill is already in your profile.",
+                        "JobFit",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+        }
+
+        boolean success = controller.addSkill(jobSeekerId, skill.getId());
+
+        if (success) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Skill \"" + skill.getName() + "\" added successfully.",
+                    "JobFit",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            loadSkills();
+            loadJobSeekerSkills();
+        } else {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Failed to add skill to your profile.",
+                    "JobFit",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 }

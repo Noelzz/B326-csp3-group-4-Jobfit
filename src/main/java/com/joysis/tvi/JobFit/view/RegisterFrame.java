@@ -1,8 +1,10 @@
 package com.joysis.tvi.JobFit.view;
 
+import com.joysis.tvi.JobFit.config.RoundedButton;
 import com.joysis.tvi.JobFit.controller.RegisterController;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class RegisterFrame extends JFrame {
@@ -20,258 +22,236 @@ public class RegisterFrame extends JFrame {
     private JButton registerButton;
     private JButton backButton;
 
-    private RegisterController registerController;
+    private final RegisterController registerController;
 
-    // JobFit colors
-    private static final Color BACKGROUND_COLOR =
-            new Color(245, 247, 250);
-
-    private static final Color TITLE_COLOR =
-            new Color(45, 95, 170);
-
-    private static final Color TEXT_COLOR =
-            new Color(35, 40, 48);
-
-    private static final Color BUTTON_COLOR =
-            new Color(45, 95, 170);
-
-    private static final Color BUTTON_HOVER =
-            new Color(35, 78, 145);
+    private final Color BACKGROUND = new Color(245, 247, 250);
+    private final Color CARD_COLOR = Color.WHITE;
+    private final Color TEXT_COLOR = new Color(35, 40, 48);
+    private final Color SECONDARY_TEXT = new Color(110, 118, 130);
+    private final Color BLUE = new Color(45, 95, 170);
+    private final Color BLUE_HOVER = new Color(35, 78, 145);
+    private final Color BORDER_COLOR = new Color(220, 224, 230);
 
     public RegisterFrame() {
 
-        registerController = new RegisterController();
+        this.registerController = new RegisterController();
 
         setTitle("JobFit - Register");
-        setSize(450, 450);
+        setSize(520, 760);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        setResizable(false);
 
         createGUI();
     }
 
     private void createGUI() {
 
-        // Background
-        getContentPane().setBackground(BACKGROUND_COLOR);
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(BACKGROUND);
+        mainPanel.setBorder(new EmptyBorder(25, 45, 25, 45));
 
-        JPanel panel = new JPanel(
-                new GridLayout(8, 2, 10, 10)
-        );
+        // Header
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setBackground(BACKGROUND);
 
-        panel.setBackground(BACKGROUND_COLOR);
+        JLabel logoLabel = new JLabel("JOBFIT");
+        logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        logoLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        logoLabel.setForeground(BLUE);
 
-        panel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        25, 30, 25, 30
-                )
-        );
+        JLabel subtitleLabel = new JLabel("Create your account");
+        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        subtitleLabel.setForeground(SECONDARY_TEXT);
 
-        // Title
-        JLabel titleLabel = new JLabel(
-                "JOBFIT REGISTRATION",
-                SwingConstants.CENTER
-        );
+        headerPanel.add(logoLabel);
+        headerPanel.add(Box.createVerticalStrut(5));
+        headerPanel.add(subtitleLabel);
 
-        titleLabel.setFont(
-                new Font("SansSerif", Font.BOLD, 20)
-        );
+        // Card
+        JPanel cardPanel = new JPanel(new BorderLayout());
+        cardPanel.setBackground(CARD_COLOR);
+        cardPanel.setBorder(new EmptyBorder(25, 35, 25, 35));
 
-        titleLabel.setForeground(TITLE_COLOR);
+        JLabel titleLabel = new JLabel("REGISTER", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        titleLabel.setForeground(TEXT_COLOR);
 
-        JLabel usernameLabel = createLabel("Username:");
-        JLabel passwordLabel = createLabel("Password:");
-        JLabel roleLabel = createLabel("Role:");
+        JLabel titleSubLabel = new JLabel("Fill in your details to get started", SwingConstants.CENTER);
+        titleSubLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        titleSubLabel.setForeground(SECONDARY_TEXT);
 
-        nameLabel = createLabel("Full Name:");
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.setBackground(CARD_COLOR);
+        titlePanel.add(titleLabel);
+        titlePanel.add(Box.createVerticalStrut(4));
+        titlePanel.add(titleSubLabel);
 
-        usernameField = createTextField();
+        // Form
+        JPanel formPanel = new JPanel();
+        formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
+        formPanel.setBackground(CARD_COLOR);
 
+        JLabel usernameLabel = createLabel("Username");
+        usernameField = new JTextField();
+        styleTextField(usernameField);
+
+        formPanel.add(usernameLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(usernameField);
+        formPanel.add(Box.createVerticalStrut(12));
+
+        JLabel passwordLabel = createLabel("Password");
         passwordField = new JPasswordField();
         styleTextField(passwordField);
 
-        roleComboBox = new JComboBox<>(
-                new String[]{
-                        "Job Seeker",
-                        "Employer"
-                }
-        );
+        formPanel.add(passwordLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(passwordField);
+        formPanel.add(Box.createVerticalStrut(12));
 
-        roleComboBox.setFont(
-                new Font("SansSerif", Font.PLAIN, 13)
-        );
+        JLabel roleLabel = createLabel("Role");
+        roleComboBox = new JComboBox<>(new String[]{"Job Seeker", "Employer"});
+        styleComboBox(roleComboBox);
 
-        roleComboBox.setBackground(Color.WHITE);
+        formPanel.add(roleLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(roleComboBox);
+        formPanel.add(Box.createVerticalStrut(12));
 
-        nameField = createTextField();
-        emailField = createTextField();
-        phoneField = createTextField();
+        nameLabel = createLabel("Full Name");
+        nameField = new JTextField();
+        styleTextField(nameField);
 
-        JLabel emailLabel = createLabel("Email:");
-        JLabel phoneLabel = createLabel("Phone:");
+        formPanel.add(nameLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(nameField);
+        formPanel.add(Box.createVerticalStrut(12));
 
-        registerButton = new JButton("REGISTER");
-        backButton = new JButton("BACK TO LOGIN");
+        JLabel emailLabel = createLabel("Email");
+        emailField = new JTextField();
+        styleTextField(emailField);
 
-        styleButton(registerButton);
-        styleButton(backButton);
+        formPanel.add(emailLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(emailField);
+        formPanel.add(Box.createVerticalStrut(12));
 
-        // Original layout — unchanged
-        panel.add(usernameLabel);
-        panel.add(usernameField);
+        JLabel phoneLabel = createLabel("Phone");
+        phoneField = new JTextField();
+        styleTextField(phoneField);
 
-        panel.add(passwordLabel);
-        panel.add(passwordField);
+        formPanel.add(phoneLabel);
+        formPanel.add(Box.createVerticalStrut(5));
+        formPanel.add(phoneField);
+        formPanel.add(Box.createVerticalStrut(20));
 
-        panel.add(roleLabel);
-        panel.add(roleComboBox);
+        registerButton = new RoundedButton("REGISTER", BLUE, BLUE_HOVER);
+        registerButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        registerButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+        registerButton.setMinimumSize(new Dimension(0, 42));
+        formPanel.add(registerButton);
 
-        panel.add(nameLabel);
-        panel.add(nameField);
+        formPanel.add(Box.createVerticalStrut(8));
 
-        panel.add(emailLabel);
-        panel.add(emailField);
+        backButton = new RoundedButton("BACK TO LOGIN", CARD_COLOR, new Color(240, 245, 253));
+        backButton.setForeground(BLUE);
+        backButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        backButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        backButton.setMinimumSize(new Dimension(0, 38));
+        formPanel.add(backButton);
 
-        panel.add(phoneLabel);
-        panel.add(phoneField);
+        // Card content
+        JPanel cardContent = new JPanel(new BorderLayout());
+        cardContent.setBackground(CARD_COLOR);
+        cardContent.add(titlePanel, BorderLayout.NORTH);
 
-        panel.add(registerButton);
-        panel.add(backButton);
+        JPanel cardCenter = new JPanel(new BorderLayout());
+        cardCenter.setBackground(CARD_COLOR);
+        cardCenter.setBorder(new EmptyBorder(15, 0, 0, 0));
+        cardCenter.add(formPanel, BorderLayout.CENTER);
 
-        add(titleLabel, BorderLayout.NORTH);
-        add(panel, BorderLayout.CENTER);
+        cardContent.add(cardCenter, BorderLayout.CENTER);
+        cardPanel.add(cardContent, BorderLayout.CENTER);
 
-        roleComboBox.addActionListener(
-                e -> updateNameLabel()
-        );
+        // Center wrapper
+        JPanel centerWrapper = new JPanel(new BorderLayout());
+        centerWrapper.setBackground(BACKGROUND);
+        centerWrapper.setBorder(new EmptyBorder(15, 0, 15, 0));
+        centerWrapper.add(cardPanel, BorderLayout.CENTER);
 
-        registerButton.addActionListener(
-                e -> register()
-        );
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(centerWrapper, BorderLayout.CENTER);
 
-        backButton.addActionListener(
-                e -> openLogin()
-        );
+        add(mainPanel);
+
+        // Actions
+        roleComboBox.addActionListener(e -> updateNameLabel());
+        registerButton.addActionListener(e -> register());
+        backButton.addActionListener(e -> openLogin());
     }
 
     private JLabel createLabel(String text) {
 
         JLabel label = new JLabel(text);
-
-        label.setFont(
-                new Font("SansSerif", Font.BOLD, 13)
-        );
-
+        label.setFont(new Font("Segoe UI", Font.BOLD, 13));
         label.setForeground(TEXT_COLOR);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         return label;
     }
 
-    private JTextField createTextField() {
-
-        JTextField field = new JTextField();
-
-        styleTextField(field);
-
-        return field;
-    }
-
     private void styleTextField(JTextField field) {
 
-        field.setFont(
-                new Font("SansSerif", Font.PLAIN, 13)
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        field.setMinimumSize(new Dimension(0, 38));
+
+        field.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(BORDER_COLOR, 1),
+                        BorderFactory.createEmptyBorder(0, 12, 0, 12)
+                )
         );
 
         field.setBackground(Color.WHITE);
         field.setForeground(TEXT_COLOR);
-
-        field.setBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(
-                                new Color(210, 215, 223)
-                        ),
-                        BorderFactory.createEmptyBorder(
-                                4, 6, 4, 6
-                        )
-                )
-        );
     }
 
-    private void styleButton(JButton button) {
+    private void styleComboBox(JComboBox<String> comboBox) {
 
-        button.setFont(
-                new Font("SansSerif", Font.BOLD, 12)
-        );
-
-        button.setForeground(Color.WHITE);
-        button.setBackground(BUTTON_COLOR);
-
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-
-        button.setCursor(
-                new Cursor(Cursor.HAND_CURSOR)
-        );
-
-        button.addMouseListener(
-                new java.awt.event.MouseAdapter() {
-
-                    @Override
-                    public void mouseEntered(
-                            java.awt.event.MouseEvent e) {
-
-                        button.setBackground(BUTTON_HOVER);
-                    }
-
-                    @Override
-                    public void mouseExited(
-                            java.awt.event.MouseEvent e) {
-
-                        button.setBackground(BUTTON_COLOR);
-                    }
-                }
-        );
+        comboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        comboBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        comboBox.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        comboBox.setMinimumSize(new Dimension(0, 38));
+        comboBox.setBackground(Color.WHITE);
+        comboBox.setForeground(TEXT_COLOR);
     }
 
     private void updateNameLabel() {
 
-        if (roleComboBox.getSelectedItem()
-                .equals("Employer")) {
-
-            nameLabel.setText("Company Name:");
-
+        if (roleComboBox.getSelectedItem().equals("Employer")) {
+            nameLabel.setText("Company Name");
         } else {
-
-            nameLabel.setText("Full Name:");
+            nameLabel.setText("Full Name");
         }
     }
 
     private void register() {
 
-        String username =
-                usernameField.getText().trim();
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword());
+        String role = (String) roleComboBox.getSelectedItem();
+        String name = nameField.getText().trim();
+        String email = emailField.getText().trim();
+        String phone = phoneField.getText().trim();
 
-        String password =
-                new String(
-                        passwordField.getPassword()
-                );
-
-        String role =
-                (String) roleComboBox.getSelectedItem();
-
-        String name =
-                nameField.getText().trim();
-
-        String email =
-                emailField.getText().trim();
-
-        String phone =
-                phoneField.getText().trim();
-
-        if (username.isEmpty()
-                || password.isEmpty()
-                || name.isEmpty()
-                || email.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty()
+                || name.isEmpty() || email.isEmpty()) {
 
             JOptionPane.showMessageDialog(
                     this,
@@ -279,39 +259,22 @@ public class RegisterFrame extends JFrame {
                     "Registration",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        boolean success;
+        String error;
 
         try {
 
             if (role.equals("Job Seeker")) {
-
-                success =
-                        registerController.registerJobSeeker(
-                                username,
-                                password,
-                                name,
-                                email,
-                                phone
-                        );
-
+                error = registerController.registerJobSeeker(
+                        username, password, name, email, phone);
             } else {
-
-                success =
-                        registerController.registerEmployer(
-                                username,
-                                password,
-                                name,
-                                email,
-                                phone
-                        );
+                error = registerController.registerEmployer(
+                        username, password, name, email, phone);
             }
 
-            if (success) {
-
+            if (error == null) {
                 JOptionPane.showMessageDialog(
                         this,
                         "Registration successful!\n"
@@ -319,15 +282,11 @@ public class RegisterFrame extends JFrame {
                         "Registration Successful",
                         JOptionPane.INFORMATION_MESSAGE
                 );
-
                 openLogin();
-
             } else {
-
                 JOptionPane.showMessageDialog(
                         this,
-                        "Registration failed.\n"
-                                + "Username may already exist.",
+                        error,
                         "Registration Failed",
                         JOptionPane.ERROR_MESSAGE
                 );
@@ -350,10 +309,6 @@ public class RegisterFrame extends JFrame {
     private void openLogin() {
 
         dispose();
-
-        LoginFrame loginFrame =
-                new LoginFrame();
-
-        loginFrame.setVisible(true);
+        new LoginFrame().setVisible(true);
     }
 }

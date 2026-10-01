@@ -1,5 +1,6 @@
 package com.joysis.tvi.JobFit.view;
 
+import com.joysis.tvi.JobFit.config.RoundedButton;
 import com.joysis.tvi.JobFit.controller.UserController;
 import com.joysis.tvi.JobFit.model.User;
 
@@ -20,16 +21,10 @@ public class ManageUsersFrame extends JFrame {
     private JPasswordField passwordField;
     private JComboBox<String> roleComboBox;
 
-    private JButton addButton;
-    private JButton updateButton;
-    private JButton deleteButton;
-    private JButton refreshButton;
-    private JButton closeButton;
-
     public ManageUsersFrame(User currentUser) {
 
         this.currentUser = currentUser;
-        controller = new UserController();
+        this.controller = new UserController();
 
         setTitle("JobFit - Manage Users");
         setSize(800, 550);
@@ -43,211 +38,94 @@ public class ManageUsersFrame extends JFrame {
 
     private void createGUI() {
 
-        JPanel mainPanel =
-                new JPanel(new BorderLayout(10, 10));
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        mainPanel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        20, 30, 20, 30
-                )
-        );
+        JLabel titleLabel = new JLabel("MANAGE USERS", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
-        JLabel titleLabel =
-                new JLabel(
-                        "MANAGE USERS",
-                        SwingConstants.CENTER
-                );
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
 
-        titleLabel.setFont(
-                new Font("Arial", Font.BOLD, 24)
-        );
+        JLabel usernameLabel = new JLabel("Username:");
+        JLabel passwordLabel = new JLabel("Password:");
+        JLabel roleLabel = new JLabel("Role:");
 
-        JPanel inputPanel =
-                new JPanel(
-                        new GridLayout(3, 2, 10, 10)
-                );
+        usernameField = new JTextField();
+        passwordField = new JPasswordField();
 
-        JLabel usernameLabel =
-                new JLabel("Username:");
-
-        JLabel passwordLabel =
-                new JLabel("Password:");
-
-        JLabel roleLabel =
-                new JLabel("Role:");
-
-        usernameField =
-                new JTextField();
-
-        passwordField =
-                new JPasswordField();
-
-        roleComboBox =
-                new JComboBox<>(
-                        new String[]{
-                                "admin",
-                                "job_seeker",
-                                "employer"
-                        }
-                );
+        roleComboBox = new JComboBox<>(new String[]{
+                "admin", "job_seeker", "employer"
+        });
 
         inputPanel.add(usernameLabel);
         inputPanel.add(usernameField);
-
         inputPanel.add(passwordLabel);
         inputPanel.add(passwordField);
-
         inputPanel.add(roleLabel);
         inputPanel.add(roleComboBox);
 
-        topPanelSetup(mainPanel, titleLabel, inputPanel);
+        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        topPanel.add(titleLabel, BorderLayout.NORTH);
+        topPanel.add(inputPanel, BorderLayout.CENTER);
 
-        tableModel =
-                new DefaultTableModel(
-                        new Object[]{
-                                "ID",
-                                "Username",
-                                "Role"
-                        },
-                        0
-                ) {
+        tableModel = new DefaultTableModel(
+                new Object[]{"ID", "Username", "Role"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
-                    @Override
-                    public boolean isCellEditable(
-                            int row,
-                            int column) {
-
-                        return false;
-                    }
-                };
-
-        usersTable =
-                new JTable(tableModel);
-
+        usersTable = new JTable(tableModel);
         usersTable.setRowHeight(30);
+        usersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        usersTable.setSelectionMode(
-                ListSelectionModel.SINGLE_SELECTION
-        );
+        JScrollPane scrollPane = new JScrollPane(usersTable);
 
-        JScrollPane scrollPane =
-                new JScrollPane(usersTable);
+        JButton addButton = new RoundedButton("ADD");
+        JButton updateButton = new RoundedButton("UPDATE");
+        JButton deleteButton = new RoundedButton("DELETE", new Color(220, 70, 70), new Color(195, 55, 55));
+        JButton refreshButton = new RoundedButton("REFRESH");
+        JButton closeButton = new RoundedButton("CLOSE");
 
-        addButton =
-                new JButton("ADD");
+        Dimension btnSize = new Dimension(110, 36);
+        addButton.setPreferredSize(btnSize);
+        updateButton.setPreferredSize(btnSize);
+        deleteButton.setPreferredSize(btnSize);
+        refreshButton.setPreferredSize(btnSize);
+        closeButton.setPreferredSize(btnSize);
 
-        updateButton =
-                new JButton("UPDATE");
-
-        deleteButton =
-                new JButton("DELETE");
-
-        refreshButton =
-                new JButton("REFRESH");
-
-        closeButton =
-                new JButton("CLOSE");
-
-        JPanel buttonPanel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.CENTER,
-                                10,
-                                10
-                        )
-                );
-
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonPanel.add(addButton);
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(refreshButton);
         buttonPanel.add(closeButton);
 
-        mainPanel.add(
-                scrollPane,
-                BorderLayout.CENTER
-        );
-
-        mainPanel.add(
-                buttonPanel,
-                BorderLayout.SOUTH
-        );
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
 
-        addButton.addActionListener(
-                e -> addUser()
-        );
+        addButton.addActionListener(e -> addUser());
+        updateButton.addActionListener(e -> updateUser());
+        deleteButton.addActionListener(e -> deleteUser());
+        refreshButton.addActionListener(e -> loadUsers());
+        closeButton.addActionListener(e -> dispose());
 
-        updateButton.addActionListener(
-                e -> updateUser()
-        );
+        usersTable.getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = usersTable.getSelectedRow();
+            if (selectedRow >= 0) {
+                usernameField.setText(
+                        tableModel.getValueAt(selectedRow, 1).toString());
 
-        deleteButton.addActionListener(
-                e -> deleteUser()
-        );
+                passwordField.setText("");
 
-        refreshButton.addActionListener(
-                e -> loadUsers()
-        );
-
-        closeButton.addActionListener(
-                e -> dispose()
-        );
-
-        usersTable.getSelectionModel()
-                .addListSelectionListener(e -> {
-
-                    int selectedRow =
-                            usersTable.getSelectedRow();
-
-                    if (selectedRow >= 0) {
-
-                        usernameField.setText(
-                                tableModel.getValueAt(
-                                        selectedRow,
-                                        1
-                                ).toString()
-                        );
-
-                        /*
-                         * Never load the stored password/hash.
-                         * The password field stays blank.
-                         */
-                        passwordField.setText("");
-
-                        roleComboBox.setSelectedItem(
-                                tableModel.getValueAt(
-                                        selectedRow,
-                                        2
-                                ).toString()
-                        );
-                    }
-                });
-    }
-
-    private void topPanelSetup(
-            JPanel mainPanel,
-            JLabel titleLabel,
-            JPanel inputPanel) {
-
-        JPanel topPanel =
-                new JPanel(new BorderLayout(10, 10));
-
-        topPanel.add(
-                titleLabel,
-                BorderLayout.NORTH
-        );
-
-        topPanel.add(
-                inputPanel,
-                BorderLayout.CENTER
-        );
-
-        mainPanel.add(
-                topPanel,
-                BorderLayout.NORTH
-        );
+                roleComboBox.setSelectedItem(
+                        tableModel.getValueAt(selectedRow, 2).toString());
+            }
+        });
     }
 
     private void loadUsers() {
@@ -258,74 +136,48 @@ public class ManageUsersFrame extends JFrame {
         passwordField.setText("");
         roleComboBox.setSelectedIndex(0);
 
-        List<User> users =
-                controller.getAllUsers();
+        List<User> users = controller.getAllUsers();
 
         for (User user : users) {
-
-            tableModel.addRow(
-                    new Object[]{
-                            user.getId(),
-                            user.getUsername(),
-                            user.getRole()
-                    }
-            );
+            tableModel.addRow(new Object[]{
+                    user.getId(),
+                    user.getUsername(),
+                    user.getRole()
+            });
         }
     }
 
     private void addUser() {
 
-        String username =
-                usernameField.getText().trim();
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword()).trim();
+        String role = roleComboBox.getSelectedItem().toString();
 
-        String password =
-                new String(
-                        passwordField.getPassword()
-                ).trim();
-
-        String role =
-                roleComboBox
-                        .getSelectedItem()
-                        .toString();
-
-        if (username.isEmpty() ||
-                password.isEmpty()) {
-
+        if (username.isEmpty() || password.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
                     "Please enter username and password.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        boolean success =
-                controller.addUser(
-                        username,
-                        password,
-                        role
-                );
+        String error = controller.addUser(username, password, role);
 
-        if (success) {
-
+        if (error == null) {
             JOptionPane.showMessageDialog(
                     this,
                     "User added successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
-
             loadUsers();
-
         } else {
-
             JOptionPane.showMessageDialog(
                     this,
-                    "Failed to add user.\n"
-                            + "The username may already exist.",
-                    "JobFit",
+                    error,
+                    "Add User Failed",
                     JOptionPane.ERROR_MESSAGE
             );
         }
@@ -333,65 +185,39 @@ public class ManageUsersFrame extends JFrame {
 
     private void updateUser() {
 
-        int selectedRow =
-                usersTable.getSelectedRow();
+        int selectedRow = usersTable.getSelectedRow();
 
         if (selectedRow == -1) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a user first.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        int userId =
-                (int) tableModel.getValueAt(
-                        selectedRow,
-                        0
-                );
-
-        String username =
-                usernameField.getText().trim();
-
-        String password =
-                new String(
-                        passwordField.getPassword()
-                ).trim();
-
-        String role =
-                roleComboBox
-                        .getSelectedItem()
-                        .toString();
+        int userId = (int) tableModel.getValueAt(selectedRow, 0);
+        String username = usernameField.getText().trim();
+        String password = new String(passwordField.getPassword()).trim();
+        String role = roleComboBox.getSelectedItem().toString();
 
         if (username.isEmpty()) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Username cannot be empty.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        /*
-         * If password is blank, keep the existing password.
-         * We retrieve the existing hashed password only internally.
-         */
         if (password.isEmpty()) {
 
             User selectedUser = null;
-
-            List<User> users =
-                    controller.getAllUsers();
+            List<User> users = controller.getAllUsers();
 
             for (User user : users) {
-
                 if (user.getId() == userId) {
                     selectedUser = user;
                     break;
@@ -399,53 +225,33 @@ public class ManageUsersFrame extends JFrame {
             }
 
             if (selectedUser == null) {
-
                 JOptionPane.showMessageDialog(
                         this,
                         "Unable to find the selected user.",
                         "JobFit",
                         JOptionPane.ERROR_MESSAGE
                 );
-
                 return;
             }
 
             password = selectedUser.getPassword();
         }
 
-        boolean success =
-                controller.updateUser(
-                        userId,
-                        username,
-                        password,
-                        role
-                );
+        String error = controller.updateUser(userId, username, password, role);
 
-        /*
-         * IMPORTANT:
-         * If the password came from the database, it is already
-         * BCrypt-hashed. The UserRepository must recognize this
-         * and avoid hashing it again.
-         */
-
-        if (success) {
-
+        if (error == null) {
             JOptionPane.showMessageDialog(
                     this,
                     "User updated successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
-
             loadUsers();
-
         } else {
-
             JOptionPane.showMessageDialog(
                     this,
-                    "Failed to update user.\n"
-                            + "The username may already exist.",
-                    "JobFit",
+                    error,
+                    "Update Failed",
                     JOptionPane.ERROR_MESSAGE
             );
         }
@@ -453,81 +259,54 @@ public class ManageUsersFrame extends JFrame {
 
     private void deleteUser() {
 
-        int selectedRow =
-                usersTable.getSelectedRow();
+        int selectedRow = usersTable.getSelectedRow();
 
         if (selectedRow == -1) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a user first.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        int userId =
-                (int) tableModel.getValueAt(
-                        selectedRow,
-                        0
-                );
+        int userId = (int) tableModel.getValueAt(selectedRow, 0);
+        String username = tableModel.getValueAt(selectedRow, 1).toString();
 
-        String username =
-                tableModel.getValueAt(
-                        selectedRow,
-                        1
-                ).toString();
-
-        if (currentUser != null &&
-                userId == currentUser.getId()) {
-
+        if (currentUser != null && userId == currentUser.getId()) {
             JOptionPane.showMessageDialog(
                     this,
                     "You cannot delete the account currently logged in.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        int choice =
-                JOptionPane.showConfirmDialog(
-                        this,
-                        "Are you sure you want to delete user \""
-                                + username
-                                + "\"?",
-                        "Confirm Delete",
-                        JOptionPane.YES_NO_OPTION
-                );
+        int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete user \"" + username + "\"?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION
+        );
 
-        if (choice != JOptionPane.YES_OPTION) {
-            return;
-        }
+        if (choice != JOptionPane.YES_OPTION) return;
 
-        boolean success =
-                controller.deleteUser(userId);
+        String error = controller.deleteUser(userId);
 
-        if (success) {
-
+        if (error == null) {
             JOptionPane.showMessageDialog(
                     this,
                     "User deleted successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
-
             loadUsers();
-
         } else {
-
             JOptionPane.showMessageDialog(
                     this,
-                    "Unable to delete this user.\n"
-                            + "The user may have related profile "
-                            + "or other records.",
+                    error,
                     "Delete Failed",
                     JOptionPane.WARNING_MESSAGE
             );

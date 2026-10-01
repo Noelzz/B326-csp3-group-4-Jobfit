@@ -1,7 +1,7 @@
 package com.joysis.tvi.JobFit.service;
 
-import com.joysis.tvi.JobFit.model.Application;
 import com.joysis.tvi.JobFit.model.Applicant;
+import com.joysis.tvi.JobFit.model.Application;
 import com.joysis.tvi.JobFit.repository.ApplicationRepository;
 
 import java.time.LocalDate;
@@ -15,79 +15,44 @@ public class ApplicationService {
         repository = new ApplicationRepository();
     }
 
-    public boolean applyForJob(
-            int jobId,
-            int jobSeekerId) {
+    public boolean applyForJob(int jobId, int jobSeekerId) {
 
-        if (jobId <= 0 ||
-                jobSeekerId <= 0) {
-
+        if (jobId <= 0 || jobSeekerId <= 0) {
             return false;
         }
 
-        if (repository.hasApplied(
-                jobId,
-                jobSeekerId)) {
-
+        if (repository.hasApplied(jobId, jobSeekerId)) {
             return false;
         }
 
-        Application application =
-                new Application(
-                        0,
-                        jobId,
-                        jobSeekerId,
-                        LocalDate.now(),
-                        "Pending"
-                );
-
-        return repository.addApplication(
-                application
-        );
+        // id=0 because the DB auto-generates it
+        Application application = new Application(0, jobId, jobSeekerId, LocalDate.now(), "Pending");
+        return repository.addApplication(application);
     }
 
-    public boolean hasApplied(
-            int jobId,
-            int jobSeekerId) {
-
-        return repository.hasApplied(
-                jobId,
-                jobSeekerId
-        );
+    public boolean hasApplied(int jobId, int jobSeekerId) {
+        return repository.hasApplied(jobId, jobSeekerId);
     }
 
-    public List<Application> getApplicationsByJobSeeker(
-            int jobSeekerId) {
+    public List<Application> getApplicationsByJobSeeker(int jobSeekerId) {
 
         if (jobSeekerId <= 0) {
             return List.of();
         }
-
-        return repository.getApplicationsByJobSeeker(
-                jobSeekerId
-        );
+        return repository.getApplicationsByJobSeeker(jobSeekerId);
     }
 
-    public List<Applicant> getApplicantsByEmployer(
-            int employerId) {
+    public List<Applicant> getApplicantsByEmployer(int employerId) {
 
         if (employerId <= 0) {
             return List.of();
         }
-
-        return repository.getApplicantsByEmployer(
-                employerId
-        );
+        return repository.getApplicantsByEmployer(employerId);
     }
 
-    public boolean updateApplicationStatus(
-            int applicationId,
-            String status) {
+    public boolean updateApplicationStatus(int applicationId, String status) {
 
-        if (applicationId <= 0 ||
-                status == null ||
-                status.trim().isEmpty()) {
-
+        if (applicationId <= 0 || status == null || status.trim().isEmpty()) {
             return false;
         }
 
@@ -95,13 +60,8 @@ public class ApplicationService {
                 !status.equals("Reviewed") &&
                 !status.equals("Accepted") &&
                 !status.equals("Rejected")) {
-
             return false;
         }
-
-        return repository.updateApplicationStatus(
-                applicationId,
-                status
-        );
+        return repository.updateApplicationStatus(applicationId, status);
     }
 }

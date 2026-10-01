@@ -1,5 +1,6 @@
 package com.joysis.tvi.JobFit.view;
 
+import com.joysis.tvi.JobFit.config.RoundedButton;
 import com.joysis.tvi.JobFit.model.User;
 
 import javax.swing.*;
@@ -18,33 +19,21 @@ public class EmployerDashboard extends JFrame {
     private JButton requiredSkillsButton;
     private JButton logoutButton;
 
-    // =========================================
-    // MODERN COLORS
-    // =========================================
+    private EmployerProfileFrame employerProfileFrame;
+    private PostJobFrame postJobFrame;
+    private ManageJobsFrame manageJobsFrame;
+    private ViewApplicantsFrame viewApplicantsFrame;
+    private UpdateApplicationStatusFrame updateApplicationStatusFrame;
+    private ManageRequiredSkillsFrame manageRequiredSkillsFrame;
 
-    private final Color BACKGROUND =
-            new Color(245, 247, 250);
-
-    private final Color CARD_COLOR =
-            Color.WHITE;
-
-    private final Color TEXT_COLOR =
-            new Color(35, 40, 48);
-
-    private final Color SECONDARY_TEXT =
-            new Color(110, 118, 130);
-
-    private final Color BUTTON_COLOR =
-            new Color(45, 95, 170);
-
-    private final Color BUTTON_HOVER =
-            new Color(35, 78, 145);
-
-    private final Color LOGOUT_COLOR =
-            new Color(220, 70, 70);
-
-    private final Color LOGOUT_HOVER =
-            new Color(195, 55, 55);
+    private final Color BACKGROUND = new Color(245, 247, 250);
+    private final Color CARD_COLOR = Color.WHITE;
+    private final Color TEXT_COLOR = new Color(35, 40, 48);
+    private final Color SECONDARY_TEXT = new Color(110, 118, 130);
+    private final Color BUTTON_COLOR = new Color(45, 95, 170);
+    private final Color BUTTON_HOVER = new Color(35, 78, 145);
+    private final Color LOGOUT_COLOR = new Color(220, 70, 70);
+    private final Color LOGOUT_HOVER = new Color(195, 55, 55);
 
     public EmployerDashboard(User user) {
 
@@ -52,671 +41,194 @@ public class EmployerDashboard extends JFrame {
 
         setTitle("JobFit - Employer Dashboard");
         setSize(760, 680);
-        setDefaultCloseOperation(
-                JFrame.EXIT_ON_CLOSE
-        );
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
 
         createGUI();
     }
 
-    // =========================================
-    // CREATE GUI
-    // =========================================
-
     private void createGUI() {
 
-        // =========================================
-        // MAIN PANEL
-        // =========================================
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBackground(BACKGROUND);
+        mainPanel.setBorder(new EmptyBorder(25, 35, 25, 35));
 
-        JPanel mainPanel =
-                new JPanel(
-                        new BorderLayout()
-                );
+        // Header
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setBackground(BACKGROUND);
 
-        mainPanel.setBackground(
-                BACKGROUND
-        );
+        JLabel titleLabel = new JLabel("JOBFIT");
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 30));
+        titleLabel.setForeground(BUTTON_COLOR);
 
-        mainPanel.setBorder(
-                new EmptyBorder(
-                        25,
-                        35,
-                        25,
-                        35
-                )
-        );
+        JLabel dashboardLabel = new JLabel("EMPLOYER DASHBOARD");
+        dashboardLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dashboardLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        dashboardLabel.setForeground(TEXT_COLOR);
 
-        // =========================================
-        // HEADER
-        // =========================================
+        JLabel welcomeLabel = new JLabel("Welcome back, " + user.getUsername());
+        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        welcomeLabel.setForeground(SECONDARY_TEXT);
 
-        JPanel headerPanel =
-                new JPanel();
+        headerPanel.add(titleLabel);
+        headerPanel.add(Box.createVerticalStrut(3));
+        headerPanel.add(dashboardLabel);
+        headerPanel.add(Box.createVerticalStrut(6));
+        headerPanel.add(welcomeLabel);
 
-        headerPanel.setLayout(
-                new BoxLayout(
-                        headerPanel,
-                        BoxLayout.Y_AXIS
-                )
-        );
+        // Card
+        JPanel cardPanel = new JPanel(new BorderLayout(0, 20));
+        cardPanel.setBackground(CARD_COLOR);
+        cardPanel.setBorder(new EmptyBorder(25, 30, 25, 30));
 
-        headerPanel.setBackground(
-                BACKGROUND
-        );
+        JLabel sectionLabel = new JLabel("Employer Management");
+        sectionLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        sectionLabel.setForeground(TEXT_COLOR);
 
-        JLabel titleLabel =
-                new JLabel("JOBFIT");
+        JPanel cardHeader = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        cardHeader.setBackground(CARD_COLOR);
+        cardHeader.add(sectionLabel);
 
-        titleLabel.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
+        // Button grid
+        JPanel buttonGrid = new JPanel(new GridBagLayout());
+        buttonGrid.setBackground(CARD_COLOR);
 
-        titleLabel.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.BOLD,
-                        30
-                )
-        );
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.NONE;
 
-        titleLabel.setForeground(
-                BUTTON_COLOR
-        );
-
-        JLabel dashboardLabel =
-                new JLabel(
-                        "EMPLOYER DASHBOARD"
-                );
-
-        dashboardLabel.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        dashboardLabel.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.BOLD,
-                        18
-                )
-        );
-
-        dashboardLabel.setForeground(
-                TEXT_COLOR
-        );
-
-        JLabel welcomeLabel =
-                new JLabel(
-                        "Welcome back, " +
-                                user.getUsername()
-                );
-
-        welcomeLabel.setAlignmentX(
-                Component.CENTER_ALIGNMENT
-        );
-
-        welcomeLabel.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.PLAIN,
-                        14
-                )
-        );
-
-        welcomeLabel.setForeground(
-                SECONDARY_TEXT
-        );
-
-        headerPanel.add(
-                titleLabel
-        );
-
-        headerPanel.add(
-                Box.createVerticalStrut(3)
-        );
-
-        headerPanel.add(
-                dashboardLabel
-        );
-
-        headerPanel.add(
-                Box.createVerticalStrut(6)
-        );
-
-        headerPanel.add(
-                welcomeLabel
-        );
-
-        // =========================================
-        // DASHBOARD CARD
-        // =========================================
-
-        JPanel cardPanel =
-                new JPanel(
-                        new BorderLayout(
-                                0,
-                                20
-                        )
-                );
-
-        cardPanel.setBackground(
-                CARD_COLOR
-        );
-
-        cardPanel.setBorder(
-                new EmptyBorder(
-                        25,
-                        30,
-                        25,
-                        30
-                )
-        );
-
-        // =========================================
-        // SECTION TITLE
-        // =========================================
-
-        JLabel sectionLabel =
-                new JLabel(
-                        "Employer Management"
-                );
-
-        sectionLabel.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.BOLD,
-                        16
-                )
-        );
-
-        sectionLabel.setForeground(
-                TEXT_COLOR
-        );
-
-        JPanel cardHeader =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.CENTER
-                        )
-                );
-
-        cardHeader.setBackground(
-                CARD_COLOR
-        );
-
-        cardHeader.add(
-                sectionLabel
-        );
-
-        // =========================================
-        // BUTTON GRID
-        // =========================================
-
-        JPanel buttonGrid =
-                new JPanel(
-                        new GridBagLayout()
-                );
-
-        buttonGrid.setBackground(
-                CARD_COLOR
-        );
-
-        GridBagConstraints gbc =
-                new GridBagConstraints();
-
-        gbc.insets =
-                new Insets(
-                        8,
-                        8,
-                        8,
-                        8
-                );
-
-        gbc.fill =
-                GridBagConstraints.NONE;
-
-        // =========================================
-        // CREATE BUTTONS
-        // =========================================
-
-        profileButton =
-                createModernButton(
-                        "Manage Company Profile"
-                );
-
-        postJobButton =
-                createModernButton(
-                        "Post Job"
-                );
-
-        manageJobsButton =
-                createModernButton(
-                        "Manage Job Posts"
-                );
-
-        applicantsButton =
-                createModernButton(
-                        "View Applicants"
-                );
-
-        updateStatusButton =
-                createModernButton(
-                        "Update Application Status"
-                );
-
-        requiredSkillsButton =
-                createModernButton(
-                        "Manage Required Skills"
-                );
-
-        // =========================================
-        // ROW 1
-        // =========================================
+        profileButton = createMenuButton("Manage Company Profile");
+        postJobButton = createMenuButton("Post Job");
+        manageJobsButton = createMenuButton("Manage Job Posts");
+        applicantsButton = createMenuButton("View Applicants");
+        updateStatusButton = createMenuButton("Update Application Status");
+        requiredSkillsButton = createMenuButton("Manage Required Skills");
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-
-        buttonGrid.add(
-                profileButton,
-                gbc
-        );
+        buttonGrid.add(profileButton, gbc);
 
         gbc.gridx = 1;
-
-        buttonGrid.add(
-                postJobButton,
-                gbc
-        );
-
-        // =========================================
-        // ROW 2
-        // =========================================
+        buttonGrid.add(postJobButton, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-
-        buttonGrid.add(
-                manageJobsButton,
-                gbc
-        );
+        buttonGrid.add(manageJobsButton, gbc);
 
         gbc.gridx = 1;
-
-        buttonGrid.add(
-                applicantsButton,
-                gbc
-        );
-
-        // =========================================
-        // ROW 3
-        // =========================================
+        buttonGrid.add(applicantsButton, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-
-        buttonGrid.add(
-                updateStatusButton,
-                gbc
-        );
+        buttonGrid.add(updateStatusButton, gbc);
 
         gbc.gridx = 1;
+        buttonGrid.add(requiredSkillsButton, gbc);
 
-        buttonGrid.add(
-                requiredSkillsButton,
-                gbc
-        );
+        cardPanel.add(cardHeader, BorderLayout.NORTH);
+        cardPanel.add(buttonGrid, BorderLayout.CENTER);
 
-        // =========================================
-        // ADD CARD COMPONENTS
-        // =========================================
+        // Bottom buttons
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        bottomPanel.setBackground(BACKGROUND);
 
-        cardPanel.add(
-                cardHeader,
-                BorderLayout.NORTH
-        );
+        logoutButton = new RoundedButton("Logout", LOGOUT_COLOR, LOGOUT_HOVER);
+        logoutButton.setPreferredSize(new Dimension(120, 36));
 
-        cardPanel.add(
-                buttonGrid,
-                BorderLayout.CENTER
-        );
+        bottomPanel.add(logoutButton);
 
-        // =========================================
-        // LOGOUT
-        // =========================================
+        // Center wrapper
+        JPanel centerWrapper = new JPanel(new BorderLayout());
+        centerWrapper.setBackground(BACKGROUND);
+        centerWrapper.setBorder(new EmptyBorder(25, 0, 10, 0));
+        centerWrapper.add(cardPanel, BorderLayout.CENTER);
 
-        JPanel bottomPanel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.CENTER,
-                                0,
-                                10
-                        )
-                );
-
-        bottomPanel.setBackground(
-                BACKGROUND
-        );
-
-        logoutButton =
-                createLogoutButton(
-                        "Logout"
-                );
-
-        bottomPanel.add(
-                logoutButton
-        );
-
-        // =========================================
-        // FOOTER
-        // =========================================
-
-        JLabel footerLabel =
-                new JLabel(
-                        "JobFit • Skills and Job Matching System",
-                        SwingConstants.CENTER
-                );
-
-        footerLabel.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.PLAIN,
-                        11
-                )
-        );
-
-        footerLabel.setForeground(
-                SECONDARY_TEXT
-        );
-
-        // =========================================
-        // CENTER WRAPPER
-        // =========================================
-
-        JPanel centerWrapper =
-                new JPanel(
-                        new BorderLayout()
-                );
-
-        centerWrapper.setBackground(
-                BACKGROUND
-        );
-
-        centerWrapper.setBorder(
-                new EmptyBorder(
-                        25,
-                        0,
-                        10,
-                        0
-                )
-        );
-
-        centerWrapper.add(
-                cardPanel,
-                BorderLayout.CENTER
-        );
-
-        // =========================================
-        // MAIN LAYOUT
-        // =========================================
-
-        mainPanel.add(
-                headerPanel,
-                BorderLayout.NORTH
-        );
-
-        mainPanel.add(
-                centerWrapper,
-                BorderLayout.CENTER
-        );
-
-        mainPanel.add(
-                bottomPanel,
-                BorderLayout.SOUTH
-        );
+        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        mainPanel.add(centerWrapper, BorderLayout.CENTER);
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
 
-        // =========================================
-        // BUTTON ACTIONS
-        // =========================================
+        // Button actions
+        profileButton.addActionListener(e -> {
+            if (employerProfileFrame == null || !employerProfileFrame.isDisplayable()) {
+                employerProfileFrame = new EmployerProfileFrame(user);
+            }
+            employerProfileFrame.toFront();
+            employerProfileFrame.setVisible(true);
+        });
 
-        profileButton.addActionListener(
-                e -> {
+        postJobButton.addActionListener(e -> {
+            if (postJobFrame == null || !postJobFrame.isDisplayable()) {
+                postJobFrame = new PostJobFrame(user);
+            }
+            postJobFrame.toFront();
+            postJobFrame.setVisible(true);
+        });
 
-                    EmployerProfileFrame frame =
-                            new EmployerProfileFrame(user);
+        manageJobsButton.addActionListener(e -> {
+            if (manageJobsFrame == null || !manageJobsFrame.isDisplayable()) {
+                manageJobsFrame = new ManageJobsFrame(user);
+            }
+            manageJobsFrame.toFront();
+            manageJobsFrame.setVisible(true);
+        });
 
-                    frame.setVisible(true);
-                }
-        );
+        applicantsButton.addActionListener(e -> {
+            if (viewApplicantsFrame == null || !viewApplicantsFrame.isDisplayable()) {
+                viewApplicantsFrame = new ViewApplicantsFrame(user);
+            }
+            viewApplicantsFrame.toFront();
+            viewApplicantsFrame.setVisible(true);
+        });
 
-        postJobButton.addActionListener(
-                e -> {
+        updateStatusButton.addActionListener(e -> {
+            if (updateApplicationStatusFrame == null || !updateApplicationStatusFrame.isDisplayable()) {
+                updateApplicationStatusFrame = new UpdateApplicationStatusFrame(user);
+            }
+            updateApplicationStatusFrame.toFront();
+            updateApplicationStatusFrame.setVisible(true);
+        });
 
-                    PostJobFrame frame =
-                            new PostJobFrame(user);
+        requiredSkillsButton.addActionListener(e -> {
+            if (manageRequiredSkillsFrame == null || !manageRequiredSkillsFrame.isDisplayable()) {
+                manageRequiredSkillsFrame = new ManageRequiredSkillsFrame(user);
+            }
+            manageRequiredSkillsFrame.toFront();
+            manageRequiredSkillsFrame.setVisible(true);
+        });
 
-                    frame.setVisible(true);
-                }
-        );
-
-        manageJobsButton.addActionListener(
-                e -> {
-
-                    ManageJobsFrame frame =
-                            new ManageJobsFrame(user);
-
-                    frame.setVisible(true);
-                }
-        );
-
-        applicantsButton.addActionListener(
-                e -> {
-
-                    ViewApplicantsFrame frame =
-                            new ViewApplicantsFrame(user);
-
-                    frame.setVisible(true);
-                }
-        );
-
-        updateStatusButton.addActionListener(
-                e -> {
-
-                    UpdateApplicationStatusFrame frame =
-                            new UpdateApplicationStatusFrame(user);
-
-                    frame.setVisible(true);
-                }
-        );
-
-        requiredSkillsButton.addActionListener(
-                e -> {
-
-                    ManageRequiredSkillsFrame frame =
-                            new ManageRequiredSkillsFrame(user);
-
-                    frame.setVisible(true);
-                }
-        );
-
-        logoutButton.addActionListener(
-                e -> logout()
-        );
+        logoutButton.addActionListener(e -> logout());
     }
 
-    // =========================================
-    // MODERN BUTTON
-    // =========================================
+    private JButton createMenuButton(String text) {
 
-    private JButton createModernButton(
-            String text
-    ) {
-
-        JButton button =
-                new JButton(text);
-
-        button.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.BOLD,
-                        13
-                )
-        );
-
-        button.setForeground(
-                Color.WHITE
-        );
-
-        button.setBackground(
-                BUTTON_COLOR
-        );
-
-        button.setPreferredSize(
-                new Dimension(
-                        250,
-                        55
-                )
-        );
-
-        button.setMinimumSize(
-                new Dimension(
-                        250,
-                        55
-                )
-        );
-
-        button.setMaximumSize(
-                new Dimension(
-                        250,
-                        55
-                )
-        );
-
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setOpaque(true);
-
-        button.addMouseListener(
-                new java.awt.event.MouseAdapter() {
-
-                    @Override
-                    public void mouseEntered(
-                            java.awt.event.MouseEvent e
-                    ) {
-
-                        button.setBackground(
-                                BUTTON_HOVER
-                        );
-                    }
-
-                    @Override
-                    public void mouseExited(
-                            java.awt.event.MouseEvent e
-                    ) {
-
-                        button.setBackground(
-                                BUTTON_COLOR
-                        );
-                    }
-                }
-        );
+        RoundedButton button = new RoundedButton(text, BUTTON_COLOR, BUTTON_HOVER);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        button.setPreferredSize(new Dimension(250, 55));
+        button.setMinimumSize(new Dimension(250, 55));
+        button.setMaximumSize(new Dimension(250, 55));
 
         return button;
     }
-
-    // =========================================
-    // LOGOUT BUTTON
-    // =========================================
-
-    private JButton createLogoutButton(
-            String text
-    ) {
-
-        JButton button =
-                new JButton(text);
-
-        button.setFont(
-                new Font(
-                        "Segoe UI",
-                        Font.BOLD,
-                        12
-                )
-        );
-
-        button.setForeground(
-                Color.WHITE
-        );
-
-        button.setBackground(
-                LOGOUT_COLOR
-        );
-
-        button.setPreferredSize(
-                new Dimension(
-                        105,
-                        34
-                )
-        );
-
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setOpaque(true);
-
-        button.addMouseListener(
-                new java.awt.event.MouseAdapter() {
-
-                    @Override
-                    public void mouseEntered(
-                            java.awt.event.MouseEvent e
-                    ) {
-
-                        button.setBackground(
-                                LOGOUT_HOVER
-                        );
-                    }
-
-                    @Override
-                    public void mouseExited(
-                            java.awt.event.MouseEvent e
-                    ) {
-
-                        button.setBackground(
-                                LOGOUT_COLOR
-                        );
-                    }
-                }
-        );
-
-        return button;
-    }
-
-    // =========================================
-    // LOGOUT
-    // =========================================
 
     private void logout() {
 
-        int choice =
-                JOptionPane.showConfirmDialog(
-                        this,
-                        "Are you sure you want to logout?",
-                        "Logout",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE
-                );
+        int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to logout?",
+                "Logout",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
 
-        if (choice ==
-                JOptionPane.YES_OPTION) {
-
+        if (choice == JOptionPane.YES_OPTION) {
             dispose();
-
-            LoginFrame loginFrame =
-                    new LoginFrame();
-
-            loginFrame.setVisible(true);
+            new LoginFrame().setVisible(true);
         }
     }
 }

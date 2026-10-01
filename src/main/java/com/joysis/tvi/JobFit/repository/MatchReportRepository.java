@@ -12,96 +12,48 @@ import java.util.List;
 
 public class MatchReportRepository {
 
+    //Save Match Report
     public boolean saveMatchReport(MatchReport report) {
 
         String sql = """
-                INSERT INTO Match_Reports
-                (job_id, job_seeker_id, match_score, created_at)
-                VALUES (?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE
-                match_score = VALUES(match_score),
-                created_at = VALUES(created_at)
+                INSERT INTO Match_Reports (job_id, job_seeker_id, match_score, created_at) 
+                VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE match_score = VALUES(match_score), created_at = VALUES(created_at)
                 """;
 
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
-
-            statement.setInt(
-                    1,
-                    report.getJobId()
-            );
-
-            statement.setInt(
-                    2,
-                    report.getJobSeekerId()
-            );
-
-            statement.setDouble(
-                    3,
-                    report.getMatchScore()
-            );
-
-            statement.setObject(
-                    4,
-                    report.getCreatedAt()
-            );
+            statement.setInt(1, report.getJobId());
+            statement.setInt(2, report.getJobSeekerId());
+            statement.setDouble(3, report.getMatchScore());
+            statement.setObject(4, report.getCreatedAt());
 
             return statement.executeUpdate() > 0;
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
         return false;
     }
 
-    public List<MatchReport> getMatchReportsByJobSeeker(
-            int jobSeekerId) {
+    //Match report by jobseeker
+    public List<MatchReport> getMatchReportsByJobSeeker(int jobSeekerId) {
 
-        List<MatchReport> reports =
-                new ArrayList<>();
-
+        List<MatchReport> reports = new ArrayList<>();
         String sql = """
-                SELECT
-                    id,
-                    job_id,
-                    job_seeker_id,
-                    match_score,
-                    created_at
-                FROM Match_Reports
-                WHERE job_seeker_id = ?
-                ORDER BY match_score DESC
+                SELECT id, job_id, job_seeker_id, match_score, created_at
+                FROM Match_Reports WHERE job_seeker_id = ? ORDER BY match_score DESC
                 """;
 
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
-
-            statement.setInt(
-                    1,
-                    jobSeekerId
-            );
-
-            ResultSet resultSet =
-                    statement.executeQuery();
+            statement.setInt(1, jobSeekerId);
+            ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-
-                LocalDateTime createdAt =
-                        resultSet
-                                .getTimestamp("created_at")
-                                .toLocalDateTime();
-
+                LocalDateTime createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
                 MatchReport report =
                         new MatchReport(
                                 resultSet.getInt("id"),
@@ -110,52 +62,28 @@ public class MatchReportRepository {
                                 resultSet.getDouble("match_score"),
                                 createdAt
                         );
-
                 reports.add(report);
             }
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
         return reports;
     }
 
+    //Get all match reports
     public List<MatchReport> getAllMatchReports() {
 
-        List<MatchReport> reports =
-                new ArrayList<>();
+        List<MatchReport> reports = new ArrayList<>();
+        String sql = "SELECT mr.id, mr.job_id, mr.job_seeker_id, mr.match_score, mr.created_at FROM Match_Reports mr ORDER BY mr.match_score DESC";
 
-        String sql = """
-                SELECT
-                    mr.id,
-                    mr.job_id,
-                    mr.job_seeker_id,
-                    mr.match_score,
-                    mr.created_at
-                FROM Match_Reports mr
-                ORDER BY mr.match_score DESC
-                """;
-
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
-
-                PreparedStatement statement =
-                        connection.prepareStatement(sql);
-
-                ResultSet resultSet =
-                        statement.executeQuery()
-        ) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-
-                LocalDateTime createdAt =
-                        resultSet
-                                .getTimestamp("created_at")
-                                .toLocalDateTime();
-
+                LocalDateTime createdAt = resultSet.getTimestamp("created_at").toLocalDateTime();
                 MatchReport report =
                         new MatchReport(
                                 resultSet.getInt("id"),
@@ -169,7 +97,6 @@ public class MatchReportRepository {
             }
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 

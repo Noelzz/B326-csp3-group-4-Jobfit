@@ -3,8 +3,8 @@ package com.joysis.tvi.JobFit.service;
 import com.joysis.tvi.JobFit.model.Job;
 import com.joysis.tvi.JobFit.model.MatchReport;
 import com.joysis.tvi.JobFit.model.Skill;
-import com.joysis.tvi.JobFit.repository.JobRequiredSkillRepository;
 import com.joysis.tvi.JobFit.repository.JobRepository;
+import com.joysis.tvi.JobFit.repository.JobRequiredSkillRepository;
 import com.joysis.tvi.JobFit.repository.JobSeekerSkillRepository;
 import com.joysis.tvi.JobFit.repository.MatchReportRepository;
 
@@ -21,17 +21,10 @@ public class MatchReportService {
 
     public MatchReportService() {
 
-        matchReportRepository =
-                new MatchReportRepository();
-
-        jobRepository =
-                new JobRepository();
-
-        requiredSkillRepository =
-                new JobRequiredSkillRepository();
-
-        jobSeekerSkillRepository =
-                new JobSeekerSkillRepository();
+        matchReportRepository = new MatchReportRepository();
+        jobRepository = new JobRepository();
+        requiredSkillRepository = new JobRequiredSkillRepository();
+        jobSeekerSkillRepository = new JobSeekerSkillRepository();
     }
 
     public List<MatchReport> generateMatches(int jobSeekerId) {
@@ -40,26 +33,14 @@ public class MatchReportService {
             return List.of();
         }
 
-        List<MatchReport> reports =
-                new ArrayList<>();
-
-        List<Job> jobs =
-                jobRepository.getAllJobs();
-
-        List<Skill> seekerSkills =
-                jobSeekerSkillRepository
-                        .getJobSeekerSkills(jobSeekerId);
+        List<MatchReport> reports = new ArrayList<>();
+        List<Job> jobs = jobRepository.getAllJobs();
+        List<Skill> seekerSkills = jobSeekerSkillRepository.getJobSeekerSkills(jobSeekerId);
 
         for (Job job : jobs) {
+            var requiredSkills = requiredSkillRepository.getRequiredSkillsByJob(job.getId());
 
-            var requiredSkills =
-                    requiredSkillRepository
-                            .getRequiredSkillsByJob(
-                                    job.getId()
-                            );
-
-            // Jobs without required skills
-            // are not considered matched.
+            // Skip jobs with no required skills
             if (requiredSkills.isEmpty()) {
                 continue;
             }
@@ -67,58 +48,33 @@ public class MatchReportService {
             int matchedSkills = 0;
 
             for (var requiredSkill : requiredSkills) {
-
                 for (Skill seekerSkill : seekerSkills) {
-
-                    if (seekerSkill.getId()
-                            == requiredSkill.getSkillId()) {
-
+                    if (seekerSkill.getId() == requiredSkill.getSkillId()) {
                         matchedSkills++;
                         break;
                     }
                 }
             }
 
-            double matchScore =
-                    ((double) matchedSkills
-                            / requiredSkills.size())
-                            * 100.0;
-
-            MatchReport report =
-                    new MatchReport(
-                            0,
-                            job.getId(),
-                            jobSeekerId,
-                            matchScore,
-                            LocalDateTime.now()
-                    );
-
-            matchReportRepository
-                    .saveMatchReport(report);
-
+            double matchScore = ((double) matchedSkills / requiredSkills.size()) * 100.0;
+            MatchReport report = new MatchReport(0, job.getId(), jobSeekerId, matchScore, LocalDateTime.now());
+            matchReportRepository.saveMatchReport(report);
             reports.add(report);
         }
 
         return reports;
     }
 
-    public List<MatchReport> getMatchesByJobSeeker(
-            int jobSeekerId) {
+    public List<MatchReport> getMatchesByJobSeeker(int jobSeekerId) {
 
         if (jobSeekerId <= 0) {
             return List.of();
         }
-
-        return matchReportRepository
-                .getMatchReportsByJobSeeker(
-                        jobSeekerId
-                );
+        return matchReportRepository.getMatchReportsByJobSeeker(jobSeekerId);
     }
 
     public List<MatchReport> getAllMatchReports() {
-
-        return matchReportRepository
-                .getAllMatchReports();
+        return matchReportRepository.getAllMatchReports();
     }
 
     public Job getJobById(int jobId) {
@@ -127,16 +83,13 @@ public class MatchReportService {
             return null;
         }
 
-        List<Job> jobs =
-                jobRepository.getAllJobs();
+        List<Job> jobs = jobRepository.getAllJobs();
 
         for (Job job : jobs) {
-
             if (job.getId() == jobId) {
                 return job;
             }
         }
-
         return null;
     }
 }

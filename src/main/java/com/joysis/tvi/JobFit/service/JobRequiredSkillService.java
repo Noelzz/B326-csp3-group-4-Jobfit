@@ -10,59 +10,34 @@ public class JobRequiredSkillService {
     private final JobRequiredSkillRepository repository;
 
     public JobRequiredSkillService() {
-
-        repository =
-                new JobRequiredSkillRepository();
+        repository = new JobRequiredSkillRepository();
     }
 
-    public List<JobRequiredSkill> getRequiredSkillsByJob(
-            int jobId) {
+    public List<JobRequiredSkill> getRequiredSkillsByJob(int jobId) {
 
         if (jobId <= 0) {
             return List.of();
         }
-
-        return repository.getRequiredSkillsByJob(
-                jobId
-        );
+        return repository.getRequiredSkillsByJob(jobId);
     }
 
-    public boolean addRequiredSkill(
-            int jobId,
-            int skillId) {
+    public boolean addRequiredSkill(int jobId, int skillId) {
 
-        if (jobId <= 0 ||
-                skillId <= 0) {
-
+        if (jobId <= 0 || skillId <= 0) {
             return false;
         }
 
-        if (repository.hasRequiredSkill(
-                jobId,
-                skillId)) {
-
+        if (repository.hasRequiredSkill(jobId, skillId)) {
             return false;
         }
-
-        return repository.addRequiredSkill(
-                jobId,
-                skillId
-        );
+        return repository.addRequiredSkill(jobId, skillId);
     }
 
-    public boolean removeRequiredSkill(
-            int jobId,
-            int skillId) {
+    public boolean removeRequiredSkill(int jobId, int skillId) {
 
-        if (jobId <= 0 ||
-                skillId <= 0) {
-
+        if (jobId <= 0 || skillId <= 0) {
             return false;
         }
-
-        return repository.removeRequiredSkill(
-                jobId,
-                skillId
-        );
+        return repository.removeRequiredSkill(jobId, skillId);
     }
 }

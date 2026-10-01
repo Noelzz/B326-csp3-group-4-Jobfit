@@ -11,31 +11,15 @@ import java.util.List;
 
 public class JobCategoryRepository {
 
-    // =========================
-    // GET ALL CATEGORIES
-    // =========================
-
+    // Get all categories
     public List<JobCategory> getAllCategories() {
 
-        List<JobCategory> categories =
-                new ArrayList<>();
+        List<JobCategory> categories = new ArrayList<>();
+        String sql = "SELECT id, name, description FROM Job_Categories ORDER BY name";
 
-        String sql = """
-                SELECT id, name, description
-                FROM Job_Categories
-                ORDER BY name
-                """;
-
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
-
-                PreparedStatement statement =
-                        connection.prepareStatement(sql);
-
-                ResultSet resultSet =
-                        statement.executeQuery()
-        ) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
 
@@ -45,7 +29,6 @@ public class JobCategoryRepository {
                                 resultSet.getString("name"),
                                 resultSet.getString("description")
                         );
-
                 categories.add(category);
             }
 
@@ -57,27 +40,13 @@ public class JobCategoryRepository {
         return categories;
     }
 
-    // =========================
-    // ADD CATEGORY
-    // =========================
+    // Add Category
+    public boolean addCategory(String name, String description) {
 
-    public boolean addCategory(
-            String name,
-            String description) {
+        String sql = "INSERT INTO Job_Categories (name, description) VALUES (?, ?)";
 
-        String sql = """
-                INSERT INTO Job_Categories
-                (name, description)
-                VALUES (?, ?)
-                """;
-
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
-
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, name);
             statement.setString(2, description);
@@ -85,36 +54,19 @@ public class JobCategoryRepository {
             return statement.executeUpdate() > 0;
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
         return false;
     }
 
-    // =========================
-    // UPDATE CATEGORY
-    // =========================
+    // Update Category
+    public boolean updateCategory(int id, String name, String description) {
 
-    public boolean updateCategory(
-            int id,
-            String name,
-            String description) {
+        String sql = "UPDATE Job_Categories SET name = ?, description = ? WHERE id = ?";
 
-        String sql = """
-                UPDATE Job_Categories
-                SET name = ?,
-                    description = ?
-                WHERE id = ?
-                """;
-
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
-
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, name);
             statement.setString(2, description);
@@ -123,38 +75,25 @@ public class JobCategoryRepository {
             return statement.executeUpdate() > 0;
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
         return false;
     }
 
-    // =========================
-    // DELETE CATEGORY
-    // =========================
-
+    // Delete Category
     public boolean deleteCategory(int id) {
 
-        String sql = """
-                DELETE FROM Job_Categories
-                WHERE id = ?
-                """;
+        String sql = "DELETE FROM Job_Categories WHERE id = ?";
 
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
-
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, id);
 
             return statement.executeUpdate() > 0;
 
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 

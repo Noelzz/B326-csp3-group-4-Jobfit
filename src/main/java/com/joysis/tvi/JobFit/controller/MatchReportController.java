@@ -18,21 +18,15 @@ public class MatchReportController {
         return service.generateMatches(jobSeekerId);
     }
 
-    public List<MatchReport> getMatchesByJobSeeker(
-            int jobSeekerId) {
-
-        return service.getMatchesByJobSeeker(
-                jobSeekerId
-        );
+    public List<MatchReport> getMatchesByJobSeeker(int jobSeekerId) {
+        return service.getMatchesByJobSeeker(jobSeekerId);
     }
 
     public List<MatchReport> getAllMatchReports() {
-
         return service.getAllMatchReports();
     }
 
     public Job getJobById(int jobId) {
-
         return service.getJobById(jobId);
     }
 }

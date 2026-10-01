@@ -6,9 +6,6 @@ public class JobCategory {
     private String name;
     private String description;
 
-    public JobCategory() {
-    }
-
     public JobCategory(
             int id,
             String name,
@@ -37,10 +34,6 @@ public class JobCategory {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @Override

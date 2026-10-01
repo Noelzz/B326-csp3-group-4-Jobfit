@@ -15,7 +15,7 @@ public class EmployerController {
         return service.getProfile(userId);
     }
 
-    public boolean updateProfile(Employer employer) {
+    public String updateProfile(Employer employer) {
         return service.updateProfile(employer);
     }
 }

@@ -1,5 +1,6 @@
 package com.joysis.tvi.JobFit.service;
 
+import com.joysis.tvi.JobFit.config.PasswordValidator;
 import com.joysis.tvi.JobFit.repository.UserRepository;
 
 public class RegisterService {
@@ -10,76 +11,83 @@ public class RegisterService {
         userRepository = new UserRepository();
     }
 
-    public boolean registerJobSeeker(
+    public String registerJobSeeker(
             String username,
             String password,
             String fullName,
             String email,
             String phone) {
 
-        if (username == null || username.trim().isEmpty()) {
-            return false;
+        if (!PasswordValidator.isValidUsername(username)) {
+            return "Invalid username. Use 3-50 letters, numbers, or underscores.";
+        }
+        if (!PasswordValidator.isValidPassword(password)) {
+            return "Invalid password. Must be at least 8 characters with a letter and a number.";
+        }
+        if (!PasswordValidator.isValidName(fullName)) {
+            return "Invalid full name. Must be 2-100 characters.";
+        }
+        if (!PasswordValidator.isValidEmail(email)) {
+            return "Invalid email format.";
+        }
+        if (!PasswordValidator.isValidPhone(phone)) {
+            return "Invalid phone number. Use digits, optional '+' and dashes.";
+        }
+        if (userRepository.usernameExists(username.trim())) {
+            return "Username is already taken.";
+        }
+        if (userRepository.emailExistsJobSeeker(email.trim())) {
+            return "Email is already registered.";
         }
 
-        if (password == null || password.isEmpty()) {
-            return false;
-        }
-
-        if (fullName == null || fullName.trim().isEmpty()) {
-            return false;
-        }
-
-        if (email == null || email.trim().isEmpty()) {
-            return false;
-        }
-
-        if (userRepository.usernameExists(username)) {
-            return false;
-        }
-
-        return userRepository.registerJobSeeker(
-                username,
+        boolean created = userRepository.registerJobSeeker(
+                username.trim(),
                 password,
-                fullName,
-                email,
-                phone
+                fullName.trim(),
+                email.trim(),
+                phone == null ? null : phone.trim()
         );
+
+        return created ? null : "Registration failed due to a database error.";
     }
 
-
-    public boolean registerEmployer(
+    public String registerEmployer(
             String username,
             String password,
             String companyName,
             String email,
             String phone) {
 
-        if (username == null || username.trim().isEmpty()) {
-            return false;
+        if (!PasswordValidator.isValidUsername(username)) {
+            return "Invalid username. Use 3-50 letters, numbers, or underscores.";
+        }
+        if (!PasswordValidator.isValidPassword(password)) {
+            return "Invalid password. Must be at least 8 characters with a letter and a number.";
+        }
+        if (!PasswordValidator.isValidName(companyName)) {
+            return "Invalid company name. Must be 2-100 characters.";
+        }
+        if (!PasswordValidator.isValidEmail(email)) {
+            return "Invalid email format.";
+        }
+        if (!PasswordValidator.isValidPhone(phone)) {
+            return "Invalid phone number. Use digits, optional '+' and dashes.";
+        }
+        if (userRepository.usernameExists(username.trim())) {
+            return "Username is already taken.";
+        }
+        if (userRepository.emailExistsEmployer(email.trim())) {
+            return "Email is already registered.";
         }
 
-        if (password == null || password.isEmpty()) {
-            return false;
-        }
-
-        if (companyName == null || companyName.trim().isEmpty()) {
-            return false;
-        }
-
-        if (email == null || email.trim().isEmpty()) {
-            return false;
-        }
-
-        if (userRepository.usernameExists(username)) {
-            return false;
-        }
-
-        return userRepository.registerEmployer(
-                username,
+        boolean created = userRepository.registerEmployer(
+                username.trim(),
                 password,
-                companyName,
-                email,
-                phone
+                companyName.trim(),
+                email.trim(),
+                phone == null ? null : phone.trim()
         );
+
+        return created ? null : "Registration failed due to a database error.";
     }
 }

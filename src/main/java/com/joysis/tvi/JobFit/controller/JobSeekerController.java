@@ -12,12 +12,10 @@ public class JobSeekerController {
     }
 
     public JobSeeker getProfile(int userId) {
-
         return service.getProfile(userId);
     }
 
-    public boolean updateProfile(JobSeeker jobSeeker) {
-
+    public String updateProfile(JobSeeker jobSeeker) {
         return service.updateProfile(jobSeeker);
     }
 }

@@ -9,25 +9,18 @@ import java.sql.ResultSet;
 
 public class EmployerRepository {
 
+    //Get Profile
     public Employer getProfile(int userId) {
 
-        String sql = """
-                SELECT id, user_id, company_name, email, phone
-                FROM Employer
-                WHERE user_id = ?
-                """;
+        String sql = "SELECT id, user_id, company_name, email, phone FROM Employer WHERE user_id = ?";
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setInt(1, userId);
-
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-
                 return new Employer(
                         resultSet.getInt("id"),
                         resultSet.getInt("user_id"),
@@ -44,20 +37,13 @@ public class EmployerRepository {
         return null;
     }
 
+    // Update Profile
     public boolean updateProfile(Employer employer) {
 
-        String sql = """
-                UPDATE Employer
-                SET company_name = ?,
-                    email = ?,
-                    phone = ?
-                WHERE user_id = ?
-                """;
+        String sql = "UPDATE Employer SET company_name = ?, email = ?, phone = ? WHERE user_id = ?";
 
-        try (Connection connection =
-                     DatabaseConnection.getConnection();
-             PreparedStatement statement =
-                     connection.prepareStatement(sql)) {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, employer.getCompanyName());
             statement.setString(2, employer.getEmail());
@@ -65,6 +51,26 @@ public class EmployerRepository {
             statement.setInt(4, employer.getUserId());
 
             return statement.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    //Email Exists Already
+    public boolean emailExistsExceptUser(String email, int userId) {
+
+        String sql = "SELECT id FROM Employer WHERE email = ? AND user_id <> ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, email);
+            statement.setInt(2, userId);
+
+            return statement.executeQuery().next();
 
         } catch (Exception e) {
             e.printStackTrace();
