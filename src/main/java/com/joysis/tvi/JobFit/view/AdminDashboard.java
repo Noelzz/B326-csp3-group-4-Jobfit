@@ -1,22 +1,14 @@
 package com.joysis.tvi.JobFit.view;
 
-import com.joysis.tvi.JobFit.config.RoundedButton;
 import com.joysis.tvi.JobFit.model.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class AdminDashboard extends JFrame {
+public class AdminDashboard extends BaseDashboardFrame {
 
     private final User user;
-
-    private JButton manageUsersButton;
-    private JButton manageSkillsButton;
-    private JButton manageJobManagementButton;
-    private JButton matchReportsButton;
-    private JButton myProfileButton;
-    private JButton logoutButton;
 
     private ManageUsersFrame manageUsersFrame;
     private ManageSkillsFrame manageSkillsFrame;
@@ -24,196 +16,315 @@ public class AdminDashboard extends JFrame {
     private MatchReportsFrame matchReportsFrame;
     private AdminProfileFrame adminProfileFrame;
 
-    private final Color BACKGROUND = new Color(245, 247, 250);
-    private final Color CARD_COLOR = Color.WHITE;
-    private final Color TEXT_COLOR = new Color(35, 40, 48);
-    private final Color SECONDARY_TEXT = new Color(110, 118, 130);
-    private final Color BUTTON_COLOR = new Color(45, 95, 170);
-    private final Color BUTTON_HOVER = new Color(35, 78, 145);
-    private final Color LOGOUT_COLOR = new Color(220, 70, 70);
-    private final Color LOGOUT_HOVER = new Color(195, 55, 55);
-
     public AdminDashboard(User user) {
 
+        super(
+                "JobFit - Admin Dashboard",
+                capitalizeName(user.getUsername()),
+                "Admin Panel");
         this.user = user;
 
-        setTitle("JobFit - Admin Dashboard");
-        setSize(760, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
-
-        createGUI();
+        createMenu();
+        createContent();
     }
 
-    private void createGUI() {
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(BACKGROUND);
-        mainPanel.setBorder(new EmptyBorder(25, 35, 25, 35));
+    // SIDEBAR MENU
 
-        // Header
-        JPanel headerPanel = new JPanel();
-        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
-        headerPanel.setBackground(BACKGROUND);
+    private void createMenu() {
 
-        JLabel titleLabel = new JLabel("JOBFIT");
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 30));
-        titleLabel.setForeground(BUTTON_COLOR);
+        addSidebarButton("Dashboard", true);
+        JButton users = addSidebarButton("Manage Users", false);
+        JButton skills = addSidebarButton("Manage Skills", false);
+        JButton jobs = addSidebarButton("Jobs & Categories", false);
+        JButton reports = addSidebarButton("Match Reports", false);
 
-        JLabel dashboardLabel = new JLabel("ADMIN DASHBOARD");
-        dashboardLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        dashboardLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        dashboardLabel.setForeground(TEXT_COLOR);
+        addSidebarGlue();
 
-        JLabel welcomeLabel = new JLabel("Welcome back, " + user.getUsername());
-        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        welcomeLabel.setForeground(SECONDARY_TEXT);
+        JButton profile = addSidebarButton("My Profile", false);
+        JButton logout = addSidebarButton("Logout", false);
+        logout.setForeground(UITheme.DANGER);
 
-        headerPanel.add(titleLabel);
-        headerPanel.add(Box.createVerticalStrut(3));
-        headerPanel.add(dashboardLabel);
-        headerPanel.add(Box.createVerticalStrut(6));
-        headerPanel.add(welcomeLabel);
+        // MANAGE USERS
+        users.addActionListener(e -> {
 
-        // Card
-        JPanel cardPanel = new JPanel(new BorderLayout(0, 20));
-        cardPanel.setBackground(CARD_COLOR);
-        cardPanel.setBorder(new EmptyBorder(25, 30, 25, 30));
+            if (
+                    manageUsersFrame == null || !manageUsersFrame.isDisplayable()
+            ) {
 
-        JLabel sectionLabel = new JLabel("Administration");
-        sectionLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        sectionLabel.setForeground(TEXT_COLOR);
-
-        JPanel cardHeader = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        cardHeader.setBackground(CARD_COLOR);
-        cardHeader.add(sectionLabel);
-
-        // Button grid
-        JPanel buttonGrid = new JPanel(new GridBagLayout());
-        buttonGrid.setBackground(CARD_COLOR);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.NONE;
-
-        manageUsersButton = createMenuButton("Manage Users");
-        manageSkillsButton = createMenuButton("Manage Skills");
-        manageJobManagementButton = createMenuButton("Manage Jobs & Categories");
-        matchReportsButton = createMenuButton("View Match Reports");
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        buttonGrid.add(manageUsersButton, gbc);
-
-        gbc.gridx = 1;
-        buttonGrid.add(manageSkillsButton, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        buttonGrid.add(manageJobManagementButton, gbc);
-
-        gbc.gridx = 1;
-        buttonGrid.add(matchReportsButton, gbc);
-
-        cardPanel.add(cardHeader, BorderLayout.NORTH);
-        cardPanel.add(buttonGrid, BorderLayout.CENTER);
-
-        // Bottom buttons
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        bottomPanel.setBackground(BACKGROUND);
-
-        myProfileButton = new RoundedButton("My Profile", BUTTON_COLOR, BUTTON_HOVER);
-        myProfileButton.setPreferredSize(new Dimension(120, 36));
-
-        logoutButton = new RoundedButton("Logout", LOGOUT_COLOR, LOGOUT_HOVER);
-        logoutButton.setPreferredSize(new Dimension(120, 36));
-
-        bottomPanel.add(myProfileButton);
-        bottomPanel.add(logoutButton);
-
-        // Center wrapper
-        JPanel centerWrapper = new JPanel(new BorderLayout());
-        centerWrapper.setBackground(BACKGROUND);
-        centerWrapper.setBorder(new EmptyBorder(25, 0, 10, 0));
-        centerWrapper.add(cardPanel, BorderLayout.CENTER);
-
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
-        mainPanel.add(centerWrapper, BorderLayout.CENTER);
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-        add(mainPanel);
-
-        // Button actions
-        manageUsersButton.addActionListener(e -> {
-            if (manageUsersFrame == null || !manageUsersFrame.isDisplayable()) {
                 manageUsersFrame = new ManageUsersFrame(user);
             }
-            manageUsersFrame.toFront();
             manageUsersFrame.setVisible(true);
+            manageUsersFrame.toFront();
         });
 
-        manageSkillsButton.addActionListener(e -> {
-            if (manageSkillsFrame == null || !manageSkillsFrame.isDisplayable()) {
+        // MANAGE SKILLS
+        skills.addActionListener(e -> {
+
+            if (
+                    manageSkillsFrame == null || !manageSkillsFrame.isDisplayable()
+            ) {
+
                 manageSkillsFrame = new ManageSkillsFrame();
             }
-            manageSkillsFrame.toFront();
+
             manageSkillsFrame.setVisible(true);
+            manageSkillsFrame.toFront();
         });
 
-        manageJobManagementButton.addActionListener(e -> {
-            if (adminJobManagementFrame == null || !adminJobManagementFrame.isDisplayable()) {
-                adminJobManagementFrame = new AdminJobManagementFrame();
+        // JOBS AND CATEGORIES
+        jobs.addActionListener(e -> {
+
+            if (
+                    adminJobManagementFrame == null
+                            || !adminJobManagementFrame.isDisplayable()
+            ) {
+
+                adminJobManagementFrame =
+                        new AdminJobManagementFrame();
             }
-            adminJobManagementFrame.toFront();
+
             adminJobManagementFrame.setVisible(true);
+            adminJobManagementFrame.toFront();
         });
 
-        matchReportsButton.addActionListener(e -> {
-            if (matchReportsFrame == null || !matchReportsFrame.isDisplayable()) {
-                matchReportsFrame = new MatchReportsFrame();
+        // MATCH REPORTS
+        reports.addActionListener(e -> {
+
+            if (
+                    matchReportsFrame == null
+                            || !matchReportsFrame.isDisplayable()
+            ) {
+
+                matchReportsFrame =
+                        new MatchReportsFrame();
             }
-            matchReportsFrame.toFront();
+
             matchReportsFrame.setVisible(true);
+            matchReportsFrame.toFront();
         });
 
-        myProfileButton.addActionListener(e -> {
-            if (adminProfileFrame == null || !adminProfileFrame.isDisplayable()) {
+        // PROFILE
+        profile.addActionListener(e -> {
+
+            if (
+                    adminProfileFrame == null || !adminProfileFrame.isDisplayable()
+            ) {
+
                 adminProfileFrame = new AdminProfileFrame(user);
             }
-            adminProfileFrame.toFront();
+
             adminProfileFrame.setVisible(true);
+            adminProfileFrame.toFront();
         });
 
-        logoutButton.addActionListener(e -> logout());
+        // LOGOUT
+        logout.addActionListener(e -> logout());
     }
 
-    private JButton createMenuButton(String text) {
 
-        RoundedButton button = new RoundedButton(text, BUTTON_COLOR, BUTTON_HOVER);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        button.setPreferredSize(new Dimension(250, 55));
-        button.setMinimumSize(new Dimension(250, 55));
-        button.setMaximumSize(new Dimension(250, 55));
+    // DASHBOARD CONTENT
+    private void createContent() {
+        // WELCOME AREA
+        JPanel welcomePanel = new JPanel(new BorderLayout());
+        welcomePanel.setOpaque(false);
+        welcomePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 82));
+        welcomePanel.setPreferredSize(new Dimension(0, 82));
+        welcomePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JPanel welcomeText = new JPanel();
+        welcomeText.setOpaque(false);
+        welcomeText.setLayout(new BoxLayout(welcomeText, BoxLayout.Y_AXIS));
+        JLabel welcomeLabel = new JLabel("Welcome back, " + capitalizeName(user.getUsername()));
 
-        return button;
+        welcomeLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        welcomeLabel.setForeground(UITheme.TEXT);
+        JLabel subtitle = new JLabel("Manage and monitor the JobFit system.");
+        subtitle.setFont(UITheme.BODY);
+        subtitle.setForeground(UITheme.TEXT_SECONDARY);
+        welcomeText.add(welcomeLabel);
+        welcomeText.add(Box.createVerticalStrut(4));
+        welcomeText.add(subtitle);
+
+        // DATE CARD
+        RoundedPanel dateCard = new RoundedPanel(14);
+        dateCard.setBackground(UITheme.SURFACE);
+        dateCard.setLayout(new BorderLayout());
+        dateCard.setPreferredSize(new Dimension(155, 64));
+        dateCard.setMaximumSize(new Dimension(155, 64));
+        dateCard.setBorder(new EmptyBorder(10, 14, 10, 14));
+        JLabel dateTitle = new JLabel("Today");
+        dateTitle.setFont(UITheme.SMALL);
+        dateTitle.setForeground(UITheme.TEXT_SECONDARY);
+        java.time.LocalDate today = java.time.LocalDate.now();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("MMM d, yyyy");
+        JLabel dateValue = new JLabel(today.format(formatter));
+        dateValue.setFont(UITheme.LABEL);
+        dateValue.setForeground(UITheme.TEXT);
+        JPanel dateText = new JPanel();
+        dateText.setOpaque(false);
+        dateText.setLayout(new BoxLayout(dateText, BoxLayout.Y_AXIS));
+        dateText.add(dateTitle);
+        dateText.add(Box.createVerticalStrut(3));
+
+        dateText.add(dateValue);
+        dateCard.add(dateText, BorderLayout.CENTER);
+
+        welcomePanel.add(welcomeText, BorderLayout.WEST);
+        welcomePanel.add(dateCard, BorderLayout.EAST);
+        contentPanel.add(welcomePanel);
+        contentPanel.add(Box.createVerticalStrut(16));
+
+
+            // ADMINISTRATION CONTAINER
+
+        RoundedPanel container = new RoundedPanel(22);
+        container.setBackground(Color.WHITE);
+        container.setLayout(new BorderLayout());
+        container.setBorder(new EmptyBorder(20, 22, 22, 22));
+        container.setAlignmentX(Component.LEFT_ALIGNMENT);
+        container.setMaximumSize(new Dimension(Integer.MAX_VALUE, 385));
+        container.setPreferredSize(new Dimension(0, 385));
+        JLabel title = UIComponents.createSectionTitle("Administration");
+
+
+            // CARD GRID
+        JPanel cards = new JPanel(new GridLayout(2, 2, 14, 14));
+        cards.setOpaque(false);
+        cards.setBorder(new EmptyBorder(14, 0, 0, 0));
+
+
+            // MANAGE USERS
+
+        cards.add(UIComponents.createClickableActionCard(
+                "Manage Users",
+                "View, add, update and manage system users.",
+                "👥", () -> {
+                    if (manageUsersFrame == null || !manageUsersFrame.isDisplayable()) {
+                        manageUsersFrame = new ManageUsersFrame(user);}
+
+                    manageUsersFrame.setVisible(true);
+                    manageUsersFrame.toFront();
+                }
+                )
+        );
+
+
+            // MANAGE SKILLS
+        cards.add(UIComponents.createClickableActionCard(
+                "Manage Skills",
+                "Maintain JobFit skills and skill categories.",
+                "⚙", () -> {
+                    if (manageSkillsFrame == null || !manageSkillsFrame.isDisplayable()
+                    ) {
+                        manageSkillsFrame = new ManageSkillsFrame();
+                    }
+
+                    manageSkillsFrame.setVisible(true);
+                    manageSkillsFrame.toFront();
+                }
+
+                )
+            );
+
+
+            // JOBS AND CATEGORIES
+        cards.add(UIComponents.createClickableActionCard("Manage Jobs & Categories", "Manage job listings and job categories.", "▣", () -> {
+
+            if (
+                    adminJobManagementFrame == null || !adminJobManagementFrame.isDisplayable())
+            {
+                adminJobManagementFrame = new AdminJobManagementFrame();
+            }
+
+            adminJobManagementFrame.setVisible(true);
+            adminJobManagementFrame.toFront();
+        }
+        )
+
+        );
+
+
+        // MATCH REPORTS
+
+
+        cards.add(UIComponents.createClickableActionCard(
+                "View Match Reports",
+                "Generate and review JobFit matching reports.",
+                "▥", () -> {
+
+                    if (
+                            matchReportsFrame == null || !matchReportsFrame.isDisplayable())
+                    {
+
+                        matchReportsFrame = new MatchReportsFrame();
+                    }
+
+                    matchReportsFrame.setVisible(true);
+                    matchReportsFrame.toFront();
+                }
+                )
+            );
+
+            container.add(title, BorderLayout.NORTH);
+            container.add(cards, BorderLayout.CENTER);
+            contentPanel.add(container);
+        }
+
+    // ==========================================
+    // CAPITALIZE USERNAME
+    // admin -> Admin
+    // john doe -> John Doe
+    // ==========================================
+
+    private static String capitalizeName(
+            String name
+    ) {
+
+        if (
+                name == null || name.trim().isEmpty()
+        ) {
+            return "";
+        }
+
+        String[] words = name.trim()
+                        .toLowerCase()
+                        .split("\\s+");
+
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                result.append(Character.toUpperCase(word.charAt(0)));
+                if (word.length() > 1) {
+                    result.append(word.substring(1));
+                }
+
+                result.append(" ");
+            }
+        }
+
+        return result.toString().trim();
     }
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
 
     private void logout() {
 
-        int choice = JOptionPane.showConfirmDialog(
+        int result = JOptionPane.showConfirmDialog(
                 this,
                 "Are you sure you want to logout?",
                 "Logout",
                 JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
+                JOptionPane.QUESTION_MESSAGE);
 
-        if (choice == JOptionPane.YES_OPTION) {
+        if (
+                result == JOptionPane.YES_OPTION
+        ) {
+
             dispose();
-            new LoginFrame().setVisible(true);
+            new LoginFrame()
+                    .setVisible(true);
         }
     }
 }

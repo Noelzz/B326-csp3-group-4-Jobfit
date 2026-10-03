@@ -1,205 +1,672 @@
 package com.joysis.tvi.JobFit.view;
 
-import com.joysis.tvi.JobFit.config.RoundedButton;
 import com.joysis.tvi.JobFit.model.User;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-public class JobSeekerDashboard extends JFrame {
+public class JobSeekerDashboard extends BaseDashboardFrame {
 
     private final User user;
-
-    private JButton profileButton;
-    private JButton skillsButton;
-    private JButton browseJobsButton;
-    private JButton trackApplicationsButton;
-    private JButton logoutButton;
 
     private JobSeekerProfileFrame jobSeekerProfileFrame;
     private JobSeekerSkillsFrame jobSeekerSkillsFrame;
     private BrowseJobsFrame browseJobsFrame;
     private TrackApplicationsFrame trackApplicationsFrame;
 
-    private final Color BACKGROUND = new Color(245, 247, 250);
-    private final Color CARD_COLOR = Color.WHITE;
-    private final Color TEXT_COLOR = new Color(35, 40, 48);
-    private final Color SECONDARY_TEXT = new Color(110, 118, 130);
-    private final Color BUTTON_COLOR = new Color(45, 95, 170);
-    private final Color BUTTON_HOVER = new Color(35, 78, 145);
-    private final Color LOGOUT_COLOR = new Color(220, 70, 70);
-    private final Color LOGOUT_HOVER = new Color(195, 55, 55);
-
     public JobSeekerDashboard(User user) {
+
+        super(
+                "JobFit - Job Seeker Dashboard",
+                capitalizeName(user.getUsername()),
+                "Job Seeker Panel"
+        );
 
         this.user = user;
 
-        setTitle("JobFit - Job Seeker Dashboard");
-        setSize(760, 680);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
-
-        createGUI();
+        createMenu();
+        createContent();
     }
 
-    private void createGUI() {
+    // ==========================================
+    // SIDEBAR MENU
+    // ==========================================
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(BACKGROUND);
-        mainPanel.setBorder(new EmptyBorder(25, 35, 25, 35));
+    private void createMenu() {
 
-        // Header
-        JPanel headerPanel = new JPanel();
-        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
-        headerPanel.setBackground(BACKGROUND);
+        addSidebarButton(
+                "Dashboard",
+                true
+        );
 
-        JLabel titleLabel = new JLabel("JOBFIT");
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 30));
-        titleLabel.setForeground(BUTTON_COLOR);
+        JButton profileButton =
+                addSidebarButton(
+                        "Manage Profile",
+                        false
+                );
 
-        JLabel dashboardLabel = new JLabel("JOB SEEKER DASHBOARD");
-        dashboardLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        dashboardLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        dashboardLabel.setForeground(TEXT_COLOR);
+        JButton skillsButton =
+                addSidebarButton(
+                        "Manage Skills",
+                        false
+                );
 
-        JLabel welcomeLabel = new JLabel("Welcome back, " + user.getUsername());
-        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        welcomeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        welcomeLabel.setForeground(SECONDARY_TEXT);
+        JButton browseJobsButton =
+                addSidebarButton(
+                        "Browse Jobs",
+                        false
+                );
 
-        headerPanel.add(titleLabel);
-        headerPanel.add(Box.createVerticalStrut(3));
-        headerPanel.add(dashboardLabel);
-        headerPanel.add(Box.createVerticalStrut(6));
-        headerPanel.add(welcomeLabel);
+        JButton trackApplicationsButton =
+                addSidebarButton(
+                        "Track Applications",
+                        false
+                );
 
-        // Card
-        JPanel cardPanel = new JPanel(new BorderLayout(0, 20));
-        cardPanel.setBackground(CARD_COLOR);
-        cardPanel.setBorder(new EmptyBorder(25, 30, 25, 30));
+        addSidebarGlue();
 
-        JLabel sectionLabel = new JLabel("Job Seeker Management");
-        sectionLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        sectionLabel.setForeground(TEXT_COLOR);
+        JButton logoutButton =
+                addSidebarButton(
+                        "Logout",
+                        false
+                );
 
-        JPanel cardHeader = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        cardHeader.setBackground(CARD_COLOR);
-        cardHeader.add(sectionLabel);
+        logoutButton.setForeground(
+                UITheme.DANGER
+        );
 
-        // Button grid
-        JPanel buttonGrid = new JPanel(new GridBagLayout());
-        buttonGrid.setBackground(CARD_COLOR);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.NONE;
-
-        profileButton = createMenuButton("Manage Profile");
-        skillsButton = createMenuButton("Manage Skills");
-        browseJobsButton = createMenuButton("Browse Jobs");
-        trackApplicationsButton = createMenuButton("Track Applications");
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        buttonGrid.add(profileButton, gbc);
-
-        gbc.gridx = 1;
-        buttonGrid.add(skillsButton, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        buttonGrid.add(browseJobsButton, gbc);
-
-        gbc.gridx = 1;
-        buttonGrid.add(trackApplicationsButton, gbc);
-
-        cardPanel.add(cardHeader, BorderLayout.NORTH);
-        cardPanel.add(buttonGrid, BorderLayout.CENTER);
-
-        // Bottom buttons
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        bottomPanel.setBackground(BACKGROUND);
-
-        logoutButton = new RoundedButton("Logout", LOGOUT_COLOR, LOGOUT_HOVER);
-        logoutButton.setPreferredSize(new Dimension(120, 36));
-
-        bottomPanel.add(logoutButton);
-
-        // Center wrapper
-        JPanel centerWrapper = new JPanel(new BorderLayout());
-        centerWrapper.setBackground(BACKGROUND);
-        centerWrapper.setBorder(new EmptyBorder(25, 0, 10, 0));
-        centerWrapper.add(cardPanel, BorderLayout.CENTER);
-
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
-        mainPanel.add(centerWrapper, BorderLayout.CENTER);
-        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-        add(mainPanel);
-
-        // Button actions
         profileButton.addActionListener(e -> {
-            if (jobSeekerProfileFrame == null || !jobSeekerProfileFrame.isDisplayable()) {
-                jobSeekerProfileFrame = new JobSeekerProfileFrame(user);
+
+            if (
+                    jobSeekerProfileFrame == null
+                            || !jobSeekerProfileFrame.isDisplayable()
+            ) {
+
+                jobSeekerProfileFrame =
+                        new JobSeekerProfileFrame(user);
             }
-            jobSeekerProfileFrame.toFront();
+
             jobSeekerProfileFrame.setVisible(true);
+            jobSeekerProfileFrame.toFront();
         });
 
         skillsButton.addActionListener(e -> {
-            if (jobSeekerSkillsFrame == null || !jobSeekerSkillsFrame.isDisplayable()) {
-                jobSeekerSkillsFrame = new JobSeekerSkillsFrame(user);
+
+            if (
+                    jobSeekerSkillsFrame == null
+                            || !jobSeekerSkillsFrame.isDisplayable()
+            ) {
+
+                jobSeekerSkillsFrame =
+                        new JobSeekerSkillsFrame(user);
             }
-            jobSeekerSkillsFrame.toFront();
+
             jobSeekerSkillsFrame.setVisible(true);
+            jobSeekerSkillsFrame.toFront();
         });
 
         browseJobsButton.addActionListener(e -> {
-            if (browseJobsFrame == null || !browseJobsFrame.isDisplayable()) {
-                browseJobsFrame = new BrowseJobsFrame(user);
+
+            if (
+                    browseJobsFrame == null
+                            || !browseJobsFrame.isDisplayable()
+            ) {
+
+                browseJobsFrame =
+                        new BrowseJobsFrame(user);
             }
-            browseJobsFrame.toFront();
+
             browseJobsFrame.setVisible(true);
+            browseJobsFrame.toFront();
         });
 
         trackApplicationsButton.addActionListener(e -> {
-            if (trackApplicationsFrame == null || !trackApplicationsFrame.isDisplayable()) {
-                trackApplicationsFrame = new TrackApplicationsFrame(user);
+
+            if (
+                    trackApplicationsFrame == null
+                            || !trackApplicationsFrame.isDisplayable()
+            ) {
+
+                trackApplicationsFrame =
+                        new TrackApplicationsFrame(user);
             }
-            trackApplicationsFrame.toFront();
+
             trackApplicationsFrame.setVisible(true);
+            trackApplicationsFrame.toFront();
         });
 
-        logoutButton.addActionListener(e -> logout());
+        logoutButton.addActionListener(
+                e -> logout()
+        );
     }
 
-    private JButton createMenuButton(String text) {
+    // ==========================================
+    // DASHBOARD CONTENT
+    // ==========================================
 
-        RoundedButton button = new RoundedButton(text, BUTTON_COLOR, BUTTON_HOVER);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        button.setPreferredSize(new Dimension(250, 55));
-        button.setMinimumSize(new Dimension(250, 55));
-        button.setMaximumSize(new Dimension(250, 55));
+    private void createContent() {
 
-        return button;
+        // ==========================================
+        // WELCOME AREA
+        // ==========================================
+
+        JPanel welcomePanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        welcomePanel.setOpaque(false);
+
+        welcomePanel.setMaximumSize(
+                new Dimension(
+                        Integer.MAX_VALUE,
+                        84
+                )
+        );
+
+        welcomePanel.setPreferredSize(
+                new Dimension(
+                        0,
+                        84
+                )
+        );
+
+        welcomePanel.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        JPanel welcomeText =
+                new JPanel();
+
+        welcomeText.setOpaque(false);
+
+        welcomeText.setLayout(
+                new BoxLayout(
+                        welcomeText,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        JLabel welcomeLabel =
+                new JLabel(
+                        "Welcome back, "
+                                + capitalizeName(
+                                user.getUsername()
+                        )
+                );
+
+        welcomeLabel.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        28
+                )
+        );
+
+        welcomeLabel.setForeground(
+                UITheme.TEXT
+        );
+
+        JLabel subtitle =
+                new JLabel(
+                        "Find jobs, manage your skills, and track your applications."
+                );
+
+        subtitle.setFont(
+                UITheme.BODY
+        );
+
+        subtitle.setForeground(
+                UITheme.TEXT_SECONDARY
+        );
+
+        welcomeText.add(
+                welcomeLabel
+        );
+
+        welcomeText.add(
+                Box.createVerticalStrut(
+                        4
+                )
+        );
+
+        welcomeText.add(
+                subtitle
+        );
+
+        // ==========================================
+        // DATE CARD
+        // ==========================================
+
+        RoundedPanel dateCard =
+                new RoundedPanel(
+                        14
+                );
+
+        dateCard.setBackground(
+                UITheme.SURFACE
+        );
+
+        dateCard.setLayout(
+                new BorderLayout(
+                        10,
+                        0
+                )
+        );
+
+        dateCard.setPreferredSize(
+                new Dimension(
+                        175,
+                        64
+                )
+        );
+
+        dateCard.setMaximumSize(
+                new Dimension(
+                        175,
+                        64
+                )
+        );
+
+        dateCard.setBorder(
+                new EmptyBorder(
+                        10,
+                        14,
+                        10,
+                        14
+                )
+        );
+
+        JLabel calendarIcon =
+                new JLabel(
+                        "▣",
+                        SwingConstants.CENTER
+                );
+
+        calendarIcon.setFont(
+                new Font(
+                        "Segoe UI Symbol",
+                        Font.BOLD,
+                        22
+                )
+        );
+
+        calendarIcon.setForeground(
+                UITheme.BLUE
+        );
+
+        calendarIcon.setPreferredSize(
+                new Dimension(
+                        28,
+                        28
+                )
+        );
+
+        JPanel dateText =
+                new JPanel();
+
+        dateText.setOpaque(false);
+
+        dateText.setLayout(
+                new BoxLayout(
+                        dateText,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+        JLabel dateTitle =
+                new JLabel(
+                        "Today"
+                );
+
+        dateTitle.setFont(
+                UITheme.SMALL
+        );
+
+        dateTitle.setForeground(
+                UITheme.TEXT_SECONDARY
+        );
+
+        LocalDate today =
+                LocalDate.now();
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern(
+                        "MMM d, yyyy"
+                );
+
+        JLabel dateValue =
+                new JLabel(
+                        today.format(
+                                formatter
+                        )
+                );
+
+        dateValue.setFont(
+                UITheme.LABEL
+        );
+
+        dateValue.setForeground(
+                UITheme.TEXT
+        );
+
+        dateText.add(
+                dateTitle
+        );
+
+        dateText.add(
+                Box.createVerticalStrut(
+                        3
+                )
+        );
+
+        dateText.add(
+                dateValue
+        );
+
+        dateCard.add(
+                calendarIcon,
+                BorderLayout.WEST
+        );
+
+        dateCard.add(
+                dateText,
+                BorderLayout.CENTER
+        );
+
+        welcomePanel.add(
+                welcomeText,
+                BorderLayout.WEST
+        );
+
+        welcomePanel.add(
+                dateCard,
+                BorderLayout.EAST
+        );
+
+        contentPanel.add(
+                welcomePanel
+        );
+
+        contentPanel.add(
+                Box.createVerticalStrut(
+                        16
+                )
+        );
+
+        // ==========================================
+        // JOB SEEKER CONTAINER
+        // ==========================================
+
+        RoundedPanel container =
+                new RoundedPanel(
+                        22
+                );
+
+        container.setBackground(
+                Color.WHITE
+        );
+
+        container.setLayout(
+                new BorderLayout()
+        );
+
+        container.setBorder(
+                new EmptyBorder(
+                        20,
+                        22,
+                        22,
+                        22
+                )
+        );
+
+        container.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        container.setMaximumSize(
+                new Dimension(
+                        Integer.MAX_VALUE,
+                        365
+                )
+        );
+
+        container.setPreferredSize(
+                new Dimension(
+                        0,
+                        365
+                )
+        );
+
+        JLabel title =
+                UIComponents.createSectionTitle(
+                        "Job Seeker Tools"
+                );
+
+        JPanel cards =
+                new JPanel(
+                        new GridLayout(
+                                2,
+                                2,
+                                14,
+                                14
+                        )
+                );
+
+        cards.setOpaque(false);
+
+        cards.setBorder(
+                new EmptyBorder(
+                        14,
+                        0,
+                        0,
+                        0
+                )
+        );
+
+        // ==========================================
+        // PROFILE CARD
+        // ==========================================
+
+        cards.add(
+                UIComponents.createClickableActionCard(
+                        "Manage Profile",
+                        "Update your personal and contact information.",
+                        "👤",
+                        () -> {
+
+                            if (
+                                    jobSeekerProfileFrame == null
+                                            || !jobSeekerProfileFrame.isDisplayable()
+                            ) {
+
+                                jobSeekerProfileFrame =
+                                        new JobSeekerProfileFrame(
+                                                user
+                                        );
+                            }
+
+                            jobSeekerProfileFrame.setVisible(true);
+                            jobSeekerProfileFrame.toFront();
+                        }
+                )
+        );
+
+        // ==========================================
+        // SKILLS CARD
+        // ==========================================
+
+        cards.add(
+                UIComponents.createClickableActionCard(
+                        "Manage Skills",
+                        "Add and update the skills used for job matching.",
+                        "⚙",
+                        () -> {
+
+                            if (
+                                    jobSeekerSkillsFrame == null
+                                            || !jobSeekerSkillsFrame.isDisplayable()
+                            ) {
+
+                                jobSeekerSkillsFrame =
+                                        new JobSeekerSkillsFrame(
+                                                user
+                                        );
+                            }
+
+                            jobSeekerSkillsFrame.setVisible(true);
+                            jobSeekerSkillsFrame.toFront();
+                        }
+                )
+        );
+
+        // ==========================================
+        // BROWSE JOBS CARD
+        // ==========================================
+
+        cards.add(
+                UIComponents.createClickableActionCard(
+                        "Browse Jobs",
+                        "Explore available jobs and view your match scores.",
+                        "▣",
+                        () -> {
+
+                            if (
+                                    browseJobsFrame == null
+                                            || !browseJobsFrame.isDisplayable()
+                            ) {
+
+                                browseJobsFrame =
+                                        new BrowseJobsFrame(
+                                                user
+                                        );
+                            }
+
+                            browseJobsFrame.setVisible(true);
+                            browseJobsFrame.toFront();
+                        }
+                )
+        );
+
+        // ==========================================
+        // APPLICATIONS CARD
+        // ==========================================
+
+        cards.add(
+                UIComponents.createClickableActionCard(
+                        "Track Applications",
+                        "Monitor the status of your submitted applications.",
+                        "☑",
+                        () -> {
+
+                            if (
+                                    trackApplicationsFrame == null
+                                            || !trackApplicationsFrame.isDisplayable()
+                            ) {
+
+                                trackApplicationsFrame =
+                                        new TrackApplicationsFrame(
+                                                user
+                                        );
+                            }
+
+                            trackApplicationsFrame.setVisible(true);
+                            trackApplicationsFrame.toFront();
+                        }
+                )
+        );
+
+        container.add(
+                title,
+                BorderLayout.NORTH
+        );
+
+        container.add(
+                cards,
+                BorderLayout.CENTER
+        );
+
+        contentPanel.add(
+                container
+        );
     }
+
+    // ==========================================
+    // CAPITALIZE USERNAME
+    // ==========================================
+
+    private static String capitalizeName(
+            String name
+    ) {
+
+        if (
+                name == null
+                        || name.trim().isEmpty()
+        ) {
+            return "";
+        }
+
+        String[] words =
+                name.trim()
+                        .toLowerCase()
+                        .split("\\s+");
+
+        StringBuilder result =
+                new StringBuilder();
+
+        for (String word : words) {
+
+            if (!word.isEmpty()) {
+
+                result.append(
+                        Character.toUpperCase(
+                                word.charAt(0)
+                        )
+                );
+
+                if (word.length() > 1) {
+
+                    result.append(
+                            word.substring(1)
+                    );
+                }
+
+                result.append(" ");
+            }
+        }
+
+        return result
+                .toString()
+                .trim();
+    }
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
 
     private void logout() {
 
-        int choice = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure you want to logout?",
-                "Logout",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
+        int choice =
+                JOptionPane.showConfirmDialog(
+                        this,
+                        "Are you sure you want to logout?",
+                        "Logout",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
 
-        if (choice == JOptionPane.YES_OPTION) {
+        if (
+                choice
+                        == JOptionPane.YES_OPTION
+        ) {
+
             dispose();
-            new LoginFrame().setVisible(true);
+
+            new LoginFrame()
+                    .setVisible(true);
         }
     }
 }

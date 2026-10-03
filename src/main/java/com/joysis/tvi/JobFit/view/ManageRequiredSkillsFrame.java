@@ -1,7 +1,6 @@
 package com.joysis.tvi.JobFit.view;
 
 import com.joysis.tvi.JobFit.config.DatabaseConnection;
-import com.joysis.tvi.JobFit.config.RoundedButton;
 import com.joysis.tvi.JobFit.controller.JobController;
 import com.joysis.tvi.JobFit.controller.JobRequiredSkillController;
 import com.joysis.tvi.JobFit.model.Job;
@@ -11,6 +10,7 @@ import com.joysis.tvi.JobFit.model.User;
 import com.joysis.tvi.JobFit.repository.SkillRepository;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.Connection;
@@ -18,7 +18,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
-public class ManageRequiredSkillsFrame extends JFrame {
+public class ManageRequiredSkillsFrame extends BaseTableFrame {
 
     private final User user;
     private final JobController jobController;
@@ -33,120 +33,525 @@ public class ManageRequiredSkillsFrame extends JFrame {
 
     public ManageRequiredSkillsFrame(User user) {
 
+        super(
+                "JobFit - Manage Required Skills",
+                "Manage Required Skills",
+                "Assign and manage the skills required for each job post.",
+                900,
+                650
+        );
+
         this.user = user;
         this.jobController = new JobController();
         this.requiredSkillController = new JobRequiredSkillController();
         this.skillRepository = new SkillRepository();
 
-        setTitle("JobFit - Manage Required Skills");
-        setSize(800, 550);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
-
-        createGUI();
+        createContent();
 
         loadJobs();
         loadSkills();
+        loadRequiredSkills();
     }
 
-    private void createGUI() {
+    private void createContent() {
 
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        toolbarPanel.setLayout(
+                new BorderLayout()
+        );
 
-        JLabel titleLabel = new JLabel("MANAGE JOB REQUIRED SKILLS", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        // ==========================================
+        // SELECTION CARD
+        // ==========================================
 
-        JPanel selectionPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        RoundedPanel selectionCard =
+                new RoundedPanel(
+                        UITheme.CARD_RADIUS
+                );
 
-        JLabel jobLabel = new JLabel("Select Job:");
-        JLabel skillLabel = new JLabel("Select Skill:");
+        selectionCard.setBackground(
+                UITheme.SURFACE_BLUE
+        );
 
-        jobComboBox = new JComboBox<>();
-        skillComboBox = new JComboBox<>();
+        selectionCard.setLayout(
+                new BorderLayout()
+        );
 
-        selectionPanel.add(jobLabel);
-        selectionPanel.add(jobComboBox);
-        selectionPanel.add(skillLabel);
-        selectionPanel.add(skillComboBox);
+        selectionCard.setBorder(
+                new EmptyBorder(
+                        18,
+                        20,
+                        18,
+                        20
+                )
+        );
 
-        tableModel = new DefaultTableModel(
-                new Object[]{"ID", "Skill"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        JPanel infoPanel =
+                new JPanel();
 
-        skillsTable = new JTable(tableModel);
-        skillsTable.setRowHeight(30);
-        skillsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        infoPanel.setOpaque(false);
 
-        JScrollPane scrollPane = new JScrollPane(skillsTable);
+        infoPanel.setLayout(
+                new BoxLayout(
+                        infoPanel,
+                        BoxLayout.Y_AXIS
+                )
+        );
 
-        JButton addButton = new RoundedButton("ADD SKILL");
-        JButton removeButton = new RoundedButton("REMOVE", new Color(220, 70, 70), new Color(195, 55, 55));
-        JButton refreshButton = new RoundedButton("REFRESH");
-        JButton closeButton = new RoundedButton("CLOSE");
+        JLabel sectionTitle =
+                new JLabel(
+                        "Job Skill Requirements"
+                );
 
-        Dimension btnSize = new Dimension(120, 36);
-        addButton.setPreferredSize(btnSize);
-        removeButton.setPreferredSize(btnSize);
-        refreshButton.setPreferredSize(btnSize);
-        closeButton.setPreferredSize(btnSize);
+        sectionTitle.setFont(
+                UITheme.SECTION_TITLE
+        );
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        buttonPanel.add(addButton);
-        buttonPanel.add(removeButton);
-        buttonPanel.add(refreshButton);
-        buttonPanel.add(closeButton);
+        sectionTitle.setForeground(
+                UITheme.TEXT
+        );
 
-        JPanel northPanel = new JPanel(new BorderLayout(10, 10));
-        northPanel.add(titleLabel, BorderLayout.NORTH);
-        northPanel.add(selectionPanel, BorderLayout.CENTER);
+        JLabel sectionInfo =
+                new JLabel(
+                        "Select a job and assign the skills required for the position."
+                );
 
-        mainPanel.add(northPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        sectionInfo.setFont(
+                UITheme.SMALL
+        );
 
-        add(mainPanel);
+        sectionInfo.setForeground(
+                UITheme.TEXT_SECONDARY
+        );
 
-        jobComboBox.addActionListener(e -> loadRequiredSkills());
-        addButton.addActionListener(e -> addRequiredSkill());
-        removeButton.addActionListener(e -> removeRequiredSkill());
-        refreshButton.addActionListener(e -> {
-            loadJobs();
-            loadSkills();
-            loadRequiredSkills();
-        });
-        closeButton.addActionListener(e -> dispose());
+        sectionTitle.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        sectionInfo.setAlignmentX(
+                Component.LEFT_ALIGNMENT
+        );
+
+        infoPanel.add(
+                sectionTitle
+        );
+
+        infoPanel.add(
+                Box.createVerticalStrut(
+                        UITheme.GAP_XS
+                )
+        );
+
+        infoPanel.add(
+                sectionInfo
+        );
+
+        // ==========================================
+        // FORM AREA
+        // ==========================================
+
+        JPanel fieldsPanel =
+                new JPanel(
+                        new GridLayout(
+                                2,
+                                2,
+                                UITheme.GAP_MD,
+                                UITheme.GAP_SM
+                        )
+                );
+
+        fieldsPanel.setOpaque(false);
+
+        fieldsPanel.setBorder(
+                new EmptyBorder(
+                        UITheme.GAP_MD,
+                        0,
+                        0,
+                        0
+                )
+        );
+
+        JLabel jobLabel =
+                createLabel(
+                        "Select Job"
+                );
+
+        JLabel skillLabel =
+                createLabel(
+                        "Select Skill"
+                );
+
+        jobComboBox =
+                new JComboBox<>();
+
+        skillComboBox =
+                new JComboBox<>();
+
+        styleComboBox(
+                jobComboBox
+        );
+
+        styleComboBox(
+                skillComboBox
+        );
+
+        fieldsPanel.add(
+                jobLabel
+        );
+
+        fieldsPanel.add(
+                skillLabel
+        );
+
+        fieldsPanel.add(
+                jobComboBox
+        );
+
+        fieldsPanel.add(
+                skillComboBox
+        );
+
+        selectionCard.add(
+                infoPanel,
+                BorderLayout.NORTH
+        );
+
+        selectionCard.add(
+                fieldsPanel,
+                BorderLayout.CENTER
+        );
+
+        toolbarPanel.add(
+                selectionCard,
+                BorderLayout.CENTER
+        );
+
+        // ==========================================
+        // TABLE
+        // ==========================================
+
+        tableModel =
+                new DefaultTableModel(
+                        new Object[]{
+                                "Skill ID",
+                                "Required Skill"
+                        },
+                        0
+                ) {
+
+                    @Override
+                    public boolean isCellEditable(
+                            int row,
+                            int column
+                    ) {
+                        return false;
+                    }
+                };
+
+        skillsTable =
+                new JTable(
+                        tableModel
+                );
+
+        skillsTable.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION
+        );
+
+        styleTable(
+                skillsTable
+        );
+
+        skillsTable.setRowHeight(
+                42
+        );
+
+        skillsTable.setFillsViewportHeight(
+                true
+        );
+
+        skillsTable
+                .getColumnModel()
+                .getColumn(0)
+                .setPreferredWidth(
+                        100
+                );
+
+        skillsTable
+                .getColumnModel()
+                .getColumn(0)
+                .setMaxWidth(
+                        120
+                );
+
+        skillsTable
+                .getColumnModel()
+                .getColumn(1)
+                .setPreferredWidth(
+                        600
+                );
+
+        JScrollPane scrollPane =
+                new JScrollPane(
+                        skillsTable
+                );
+
+        scrollPane.setBorder(
+                BorderFactory.createEmptyBorder()
+        );
+
+        scrollPane.getViewport()
+                .setBackground(
+                        Color.WHITE
+                );
+
+        // ==========================================
+        // BUTTONS
+        // ==========================================
+
+        JButton addButton =
+                new RoundedButton(
+                        "Add Skill",
+                        UITheme.BLUE,
+                        UITheme.BLUE_HOVER
+                );
+
+        JButton removeButton =
+                new RoundedButton(
+                        "Remove Skill",
+                        UITheme.DANGER,
+                        new Color(
+                                190,
+                                55,
+                                65
+                        )
+                );
+
+        JButton refreshButton =
+                new RoundedButton(
+                        "Refresh",
+                        UITheme.NAVY_LIGHT,
+                        UITheme.NAVY
+                );
+
+        JButton closeButton =
+                new RoundedButton(
+                        "Close",
+                        UITheme.NAVY_LIGHT,
+                        UITheme.NAVY
+                );
+
+        addButton.setPreferredSize(
+                new Dimension(
+                        125,
+                        40
+                )
+        );
+
+        removeButton.setPreferredSize(
+                new Dimension(
+                        135,
+                        40
+                )
+        );
+
+        refreshButton.setPreferredSize(
+                new Dimension(
+                        110,
+                        40
+                )
+        );
+
+        closeButton.setPreferredSize(
+                new Dimension(
+                        100,
+                        40
+                )
+        );
+
+        JPanel buttonPanel =
+                new JPanel(
+                        new FlowLayout(
+                                FlowLayout.RIGHT,
+                                UITheme.GAP_SM,
+                                0
+                        )
+                );
+
+        buttonPanel.setOpaque(false);
+
+        buttonPanel.add(
+                addButton
+        );
+
+        buttonPanel.add(
+                removeButton
+        );
+
+        buttonPanel.add(
+                refreshButton
+        );
+
+        buttonPanel.add(
+                closeButton
+        );
+
+        JPanel bottomPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        bottomPanel.setOpaque(false);
+
+        bottomPanel.setBorder(
+                new EmptyBorder(
+                        UITheme.GAP_MD,
+                        0,
+                        0,
+                        0
+                )
+        );
+
+        bottomPanel.add(
+                buttonPanel,
+                BorderLayout.EAST
+        );
+
+        JPanel tableSection =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        tableSection.setOpaque(false);
+
+        tableSection.add(
+                scrollPane,
+                BorderLayout.CENTER
+        );
+
+        tableSection.add(
+                bottomPanel,
+                BorderLayout.SOUTH
+        );
+
+        tableContainer.add(
+                tableSection,
+                BorderLayout.CENTER
+        );
+
+        // ==========================================
+        // ACTIONS
+        // ==========================================
+
+        jobComboBox.addActionListener(
+                e -> loadRequiredSkills()
+        );
+
+        addButton.addActionListener(
+                e -> addRequiredSkill()
+        );
+
+        removeButton.addActionListener(
+                e -> removeRequiredSkill()
+        );
+
+        refreshButton.addActionListener(
+                e -> {
+                    loadJobs();
+                    loadSkills();
+                    loadRequiredSkills();
+                }
+        );
+
+        closeButton.addActionListener(
+                e -> dispose()
+        );
+    }
+
+    private JLabel createLabel(
+            String text
+    ) {
+
+        JLabel label =
+                new JLabel(
+                        text
+                );
+
+        label.setFont(
+                UITheme.LABEL
+        );
+
+        label.setForeground(
+                UITheme.TEXT
+        );
+
+        return label;
+    }
+
+    private void styleComboBox(
+            JComboBox<?> comboBox
+    ) {
+
+        comboBox.setFont(
+                UITheme.BODY
+        );
+
+        comboBox.setForeground(
+                UITheme.TEXT
+        );
+
+        comboBox.setBackground(
+                Color.WHITE
+        );
+
+        comboBox.setPreferredSize(
+                new Dimension(
+                        0,
+                        UITheme.FIELD_HEIGHT
+                )
+        );
+
+        comboBox.setBorder(
+                BorderFactory.createLineBorder(
+                        UITheme.BORDER_BLUE
+                )
+        );
     }
 
     private void loadJobs() {
 
         jobComboBox.removeAllItems();
 
-        int employerId = getEmployerId();
+        int employerId =
+                getEmployerId();
 
         if (employerId <= 0) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Employer profile was not found.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
+
             return;
         }
 
-        List<Job> jobs = jobController.getJobsByEmployer(employerId);
+        List<Job> jobs =
+                jobController.getJobsByEmployer(
+                        employerId
+                );
 
         for (Job job : jobs) {
-            jobComboBox.addItem(job);
+
+            jobComboBox.addItem(
+                    job
+            );
         }
 
         if (!jobs.isEmpty()) {
-            jobComboBox.setSelectedIndex(0);
+
+            jobComboBox.setSelectedIndex(
+                    0
+            );
         }
     }
 
@@ -154,10 +559,14 @@ public class ManageRequiredSkillsFrame extends JFrame {
 
         skillComboBox.removeAllItems();
 
-        List<Skill> skills = skillRepository.getAllSkills();
+        List<Skill> skills =
+                skillRepository.getAllSkills();
 
         for (Skill skill : skills) {
-            skillComboBox.addItem(skill);
+
+            skillComboBox.addItem(
+                    skill
+            );
         }
     }
 
@@ -165,62 +574,85 @@ public class ManageRequiredSkillsFrame extends JFrame {
 
         tableModel.setRowCount(0);
 
-        Job selectedJob = (Job) jobComboBox.getSelectedItem();
+        Job selectedJob =
+                (Job) jobComboBox
+                        .getSelectedItem();
 
         if (selectedJob == null) {
             return;
         }
 
         List<JobRequiredSkill> skills =
-                requiredSkillController.getRequiredSkillsByJob(selectedJob.getId());
+                requiredSkillController
+                        .getRequiredSkillsByJob(
+                                selectedJob.getId()
+                        );
 
         for (JobRequiredSkill skill : skills) {
-            tableModel.addRow(new Object[]{
-                    skill.getSkillId(),
-                    skill.getSkillName()
-            });
+
+            tableModel.addRow(
+                    new Object[]{
+                            skill.getSkillId(),
+                            skill.getSkillName()
+                    }
+            );
         }
     }
 
     private void addRequiredSkill() {
 
-        Job selectedJob = (Job) jobComboBox.getSelectedItem();
-        Skill selectedSkill = (Skill) skillComboBox.getSelectedItem();
+        Job selectedJob =
+                (Job) jobComboBox
+                        .getSelectedItem();
+
+        Skill selectedSkill =
+                (Skill) skillComboBox
+                        .getSelectedItem();
 
         if (selectedJob == null) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a job.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
+
             return;
         }
 
         if (selectedSkill == null) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a skill.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
+
             return;
         }
 
-        boolean success = requiredSkillController.addRequiredSkill(
-                selectedJob.getId(),
-                selectedSkill.getId()
-        );
+        boolean success =
+                requiredSkillController
+                        .addRequiredSkill(
+                                selectedJob.getId(),
+                                selectedSkill.getId()
+                        );
 
         if (success) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Required skill added successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
+
             loadRequiredSkills();
+
         } else {
+
             JOptionPane.showMessageDialog(
                     this,
                     "This skill may already be required for this job.",
@@ -232,44 +664,89 @@ public class ManageRequiredSkillsFrame extends JFrame {
 
     private void removeRequiredSkill() {
 
-        int selectedRow = skillsTable.getSelectedRow();
+        int selectedRow =
+                skillsTable.getSelectedRow();
 
         if (selectedRow == -1) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a required skill first.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
+
             return;
         }
 
-        Job selectedJob = (Job) jobComboBox.getSelectedItem();
-        int skillId = (int) tableModel.getValueAt(selectedRow, 0);
+        Job selectedJob =
+                (Job) jobComboBox
+                        .getSelectedItem();
 
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Remove this required skill?",
-                "Confirm Remove",
-                JOptionPane.YES_NO_OPTION
-        );
+        if (selectedJob == null) {
 
-        if (confirm != JOptionPane.YES_OPTION) return;
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Please select a job.",
+                    "JobFit",
+                    JOptionPane.WARNING_MESSAGE
+            );
 
-        boolean success = requiredSkillController.removeRequiredSkill(
-                selectedJob.getId(),
-                skillId
-        );
+            return;
+        }
+
+        int skillId =
+                (int) tableModel
+                        .getValueAt(
+                                selectedRow,
+                                0
+                        );
+
+        String skillName =
+                tableModel
+                        .getValueAt(
+                                selectedRow,
+                                1
+                        )
+                        .toString();
+
+        int confirm =
+                JOptionPane.showConfirmDialog(
+                        this,
+                        "Remove \""
+                                + skillName
+                                + "\" from this job?",
+                        "Confirm Remove",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+        if (
+                confirm
+                        != JOptionPane.YES_OPTION
+        ) {
+            return;
+        }
+
+        boolean success =
+                requiredSkillController
+                        .removeRequiredSkill(
+                                selectedJob.getId(),
+                                skillId
+                        );
 
         if (success) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Required skill removed successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
+
             loadRequiredSkills();
+
         } else {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Failed to remove required skill.",
@@ -281,21 +758,39 @@ public class ManageRequiredSkillsFrame extends JFrame {
 
     private int getEmployerId() {
 
-        String sql = "SELECT id FROM Employer WHERE user_id = ?";
+        String sql =
+                "SELECT id FROM Employer WHERE user_id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (
+                Connection connection =
+                        DatabaseConnection.getConnection();
 
-            statement.setInt(1, user.getId());
+                PreparedStatement statement =
+                        connection.prepareStatement(
+                                sql
+                        )
+        ) {
 
-            ResultSet resultSet = statement.executeQuery();
+            statement.setInt(
+                    1,
+                    user.getId()
+            );
+
+            ResultSet resultSet =
+                    statement.executeQuery();
+
             if (resultSet.next()) {
-                return resultSet.getInt("id");
+
+                return resultSet.getInt(
+                        "id"
+                );
             }
 
         } catch (Exception e) {
+
             e.printStackTrace();
         }
+
         return 0;
     }
 }

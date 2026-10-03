@@ -1,15 +1,15 @@
 package com.joysis.tvi.JobFit.view;
 
-import com.joysis.tvi.JobFit.config.RoundedButton;
 import com.joysis.tvi.JobFit.controller.UserController;
 import com.joysis.tvi.JobFit.model.User;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class ManageUsersFrame extends JFrame {
+public class ManageUsersFrame extends BaseTableFrame {
 
     private final UserController controller;
     private final User currentUser;
@@ -23,109 +23,408 @@ public class ManageUsersFrame extends JFrame {
 
     public ManageUsersFrame(User currentUser) {
 
+        super(
+                "JobFit - Manage Users",
+                "Manage Users",
+                "Add, update and manage JobFit system users.",
+                950,
+                650
+        );
+
         this.currentUser = currentUser;
         this.controller = new UserController();
 
-        setTitle("JobFit - Manage Users");
-        setSize(800, 550);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
-
-        createGUI();
+        createContent();
         loadUsers();
     }
 
-    private void createGUI() {
+    private void createContent() {
 
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        // =========================
+        // USER FORM
+        // =========================
 
-        JLabel titleLabel = new JLabel("MANAGE USERS", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        RoundedPanel formCard =
+                new RoundedPanel(
+                        UITheme.CARD_RADIUS
+                );
 
-        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        formCard.setBackground(
+                UITheme.SURFACE
+        );
 
-        JLabel usernameLabel = new JLabel("Username:");
-        JLabel passwordLabel = new JLabel("Password:");
-        JLabel roleLabel = new JLabel("Role:");
+        formCard.setLayout(
+                new GridLayout(
+                        2,
+                        3,
+                        UITheme.GAP_MD,
+                        UITheme.GAP_SM
+                )
+        );
 
-        usernameField = new JTextField();
-        passwordField = new JPasswordField();
+        formCard.setBorder(
+                new EmptyBorder(
+                        UITheme.CARD_PADDING,
+                        UITheme.CARD_PADDING,
+                        UITheme.CARD_PADDING,
+                        UITheme.CARD_PADDING
+                )
+        );
 
-        roleComboBox = new JComboBox<>(new String[]{
-                "admin", "job_seeker", "employer"
-        });
+        JLabel usernameLabel =
+                createFieldLabel("Username");
 
-        inputPanel.add(usernameLabel);
-        inputPanel.add(usernameField);
-        inputPanel.add(passwordLabel);
-        inputPanel.add(passwordField);
-        inputPanel.add(roleLabel);
-        inputPanel.add(roleComboBox);
+        JLabel passwordLabel =
+                createFieldLabel("Password");
 
-        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
-        topPanel.add(titleLabel, BorderLayout.NORTH);
-        topPanel.add(inputPanel, BorderLayout.CENTER);
+        JLabel roleLabel =
+                createFieldLabel("Role");
 
-        tableModel = new DefaultTableModel(
-                new Object[]{"ID", "Username", "Role"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        usernameField =
+                new JTextField();
 
-        usersTable = new JTable(tableModel);
-        usersTable.setRowHeight(30);
-        usersTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        passwordField =
+                new JPasswordField();
 
-        JScrollPane scrollPane = new JScrollPane(usersTable);
+        roleComboBox =
+                new JComboBox<>(
+                        new String[]{
+                                "admin",
+                                "job_seeker",
+                                "employer"
+                        }
+                );
 
-        JButton addButton = new RoundedButton("ADD");
-        JButton updateButton = new RoundedButton("UPDATE");
-        JButton deleteButton = new RoundedButton("DELETE", new Color(220, 70, 70), new Color(195, 55, 55));
-        JButton refreshButton = new RoundedButton("REFRESH");
-        JButton closeButton = new RoundedButton("CLOSE");
+        styleField(usernameField);
+        styleField(passwordField);
+        styleComboBox(roleComboBox);
 
-        Dimension btnSize = new Dimension(110, 36);
-        addButton.setPreferredSize(btnSize);
-        updateButton.setPreferredSize(btnSize);
-        deleteButton.setPreferredSize(btnSize);
-        refreshButton.setPreferredSize(btnSize);
-        closeButton.setPreferredSize(btnSize);
+        formCard.add(usernameLabel);
+        formCard.add(passwordLabel);
+        formCard.add(roleLabel);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        formCard.add(usernameField);
+        formCard.add(passwordField);
+        formCard.add(roleComboBox);
+
+        toolbarPanel.setLayout(
+                new BorderLayout()
+        );
+
+        toolbarPanel.add(
+                formCard,
+                BorderLayout.CENTER
+        );
+
+        // =========================
+        // TABLE MODEL
+        // =========================
+
+        tableModel =
+                new DefaultTableModel(
+                        new Object[]{
+                                "ID",
+                                "Username",
+                                "Role"
+                        },
+                        0
+                ) {
+
+                    @Override
+                    public boolean isCellEditable(
+                            int row,
+                            int column
+                    ) {
+                        return false;
+                    }
+                };
+
+        usersTable =
+                new JTable(
+                        tableModel
+                );
+
+        usersTable.setSelectionMode(
+                ListSelectionModel.SINGLE_SELECTION
+        );
+
+        styleTable(usersTable);
+
+        JScrollPane scrollPane =
+                new JScrollPane(
+                        usersTable
+                );
+
+        scrollPane.setBorder(
+                BorderFactory.createEmptyBorder()
+        );
+
+        scrollPane.getViewport()
+                .setBackground(
+                        Color.WHITE
+                );
+
+        // =========================
+        // TABLE SECTION
+        // =========================
+
+        JPanel tableSection =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        tableSection.setOpaque(false);
+
+        tableSection.add(
+                scrollPane,
+                BorderLayout.CENTER
+        );
+
+        // =========================
+        // BUTTON PANEL
+        // =========================
+
+        JPanel buttonPanel =
+                new JPanel(
+                        new FlowLayout(
+                                FlowLayout.RIGHT,
+                                UITheme.GAP_SM,
+                                0
+                        )
+                );
+
+        buttonPanel.setOpaque(false);
+
+        JButton addButton =
+                new RoundedButton(
+                        "Add User",
+                        UITheme.BLUE,
+                        UITheme.BLUE_HOVER
+                );
+
+        JButton updateButton =
+                new RoundedButton(
+                        "Update User",
+                        UITheme.BLUE,
+                        UITheme.BLUE_HOVER
+                );
+
+        JButton deleteButton =
+                new RoundedButton(
+                        "Delete User",
+                        UITheme.DANGER,
+                        new Color(
+                                190,
+                                55,
+                                65
+                        )
+                );
+
+        JButton refreshButton =
+                new RoundedButton(
+                        "Refresh List",
+                        UITheme.NAVY_LIGHT,
+                        UITheme.NAVY
+                );
+
+        JButton closeButton =
+                new RoundedButton(
+                        "Close",
+                        UITheme.NAVY_LIGHT,
+                        UITheme.NAVY
+                );
+
+        Dimension buttonSize =
+                new Dimension(
+                        125,
+                        40
+                );
+
+        addButton.setPreferredSize(buttonSize);
+        updateButton.setPreferredSize(buttonSize);
+        deleteButton.setPreferredSize(buttonSize);
+        refreshButton.setPreferredSize(buttonSize);
+        closeButton.setPreferredSize(buttonSize);
+
         buttonPanel.add(addButton);
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(refreshButton);
         buttonPanel.add(closeButton);
 
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        // =========================
+        // BUTTON WRAPPER
+        // prevents overlap
+        // =========================
 
-        add(mainPanel);
+        JPanel bottomPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
 
-        addButton.addActionListener(e -> addUser());
-        updateButton.addActionListener(e -> updateUser());
-        deleteButton.addActionListener(e -> deleteUser());
-        refreshButton.addActionListener(e -> loadUsers());
-        closeButton.addActionListener(e -> dispose());
+        bottomPanel.setOpaque(false);
 
-        usersTable.getSelectionModel().addListSelectionListener(e -> {
-            int selectedRow = usersTable.getSelectedRow();
-            if (selectedRow >= 0) {
-                usernameField.setText(
-                        tableModel.getValueAt(selectedRow, 1).toString());
+        bottomPanel.setBorder(
+                new EmptyBorder(
+                        UITheme.GAP_MD,
+                        0,
+                        0,
+                        0
+                )
+        );
 
-                passwordField.setText("");
+        bottomPanel.add(
+                buttonPanel,
+                BorderLayout.EAST
+        );
 
-                roleComboBox.setSelectedItem(
-                        tableModel.getValueAt(selectedRow, 2).toString());
-            }
-        });
+        tableSection.add(
+                bottomPanel,
+                BorderLayout.SOUTH
+        );
+
+        tableContainer.add(
+                tableSection,
+                BorderLayout.CENTER
+        );
+
+        // =========================
+        // ACTIONS
+        // =========================
+
+        addButton.addActionListener(
+                e -> addUser()
+        );
+
+        updateButton.addActionListener(
+                e -> updateUser()
+        );
+
+        deleteButton.addActionListener(
+                e -> deleteUser()
+        );
+
+        refreshButton.addActionListener(
+                e -> loadUsers()
+        );
+
+        closeButton.addActionListener(
+                e -> dispose()
+        );
+
+        usersTable
+                .getSelectionModel()
+                .addListSelectionListener(
+                        e -> {
+
+                            int selectedRow =
+                                    usersTable
+                                            .getSelectedRow();
+
+                            if (selectedRow >= 0) {
+
+                                usernameField.setText(
+                                        tableModel
+                                                .getValueAt(
+                                                        selectedRow,
+                                                        1
+                                                )
+                                                .toString()
+                                );
+
+                                passwordField.setText("");
+
+                                roleComboBox.setSelectedItem(
+                                        tableModel
+                                                .getValueAt(
+                                                        selectedRow,
+                                                        2
+                                                )
+                                                .toString()
+                                );
+                            }
+                        }
+                );
+    }
+
+    private JLabel createFieldLabel(
+            String text
+    ) {
+
+        JLabel label =
+                new JLabel(text);
+
+        label.setFont(
+                UITheme.LABEL
+        );
+
+        label.setForeground(
+                UITheme.TEXT
+        );
+
+        return label;
+    }
+
+    private void styleField(
+            JTextField field
+    ) {
+
+        field.setFont(
+                UITheme.BODY
+        );
+
+        field.setForeground(
+                UITheme.TEXT
+        );
+
+        field.setBackground(
+                Color.WHITE
+        );
+
+        field.setPreferredSize(
+                new Dimension(
+                        200,
+                        UITheme.FIELD_HEIGHT
+                )
+        );
+
+        field.setBorder(
+                BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(
+                                UITheme.BORDER
+                        ),
+                        new EmptyBorder(
+                                8,
+                                12,
+                                8,
+                                12
+                        )
+                )
+        );
+    }
+
+    private void styleComboBox(
+            JComboBox<String> comboBox
+    ) {
+
+        comboBox.setFont(
+                UITheme.BODY
+        );
+
+        comboBox.setForeground(
+                UITheme.TEXT
+        );
+
+        comboBox.setBackground(
+                Color.WHITE
+        );
+
+        comboBox.setPreferredSize(
+                new Dimension(
+                        200,
+                        UITheme.FIELD_HEIGHT
+                )
+        );
     }
 
     private void loadUsers() {
@@ -136,44 +435,74 @@ public class ManageUsersFrame extends JFrame {
         passwordField.setText("");
         roleComboBox.setSelectedIndex(0);
 
-        List<User> users = controller.getAllUsers();
+        List<User> users =
+                controller.getAllUsers();
 
         for (User user : users) {
-            tableModel.addRow(new Object[]{
-                    user.getId(),
-                    user.getUsername(),
-                    user.getRole()
-            });
+
+            tableModel.addRow(
+                    new Object[]{
+                            user.getId(),
+                            user.getUsername(),
+                            user.getRole()
+                    }
+            );
         }
     }
 
     private void addUser() {
 
-        String username = usernameField.getText().trim();
-        String password = new String(passwordField.getPassword()).trim();
-        String role = roleComboBox.getSelectedItem().toString();
+        String username =
+                usernameField
+                        .getText()
+                        .trim();
 
-        if (username.isEmpty() || password.isEmpty()) {
+        String password =
+                new String(
+                        passwordField
+                                .getPassword()
+                ).trim();
+
+        String role =
+                roleComboBox
+                        .getSelectedItem()
+                        .toString();
+
+        if (
+                username.isEmpty()
+                        || password.isEmpty()
+        ) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Please enter username and password.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
+
             return;
         }
 
-        String error = controller.addUser(username, password, role);
+        String error =
+                controller.addUser(
+                        username,
+                        password,
+                        role
+                );
 
         if (error == null) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "User added successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
+
             loadUsers();
+
         } else {
+
             JOptionPane.showMessageDialog(
                     this,
                     error,
@@ -185,69 +514,109 @@ public class ManageUsersFrame extends JFrame {
 
     private void updateUser() {
 
-        int selectedRow = usersTable.getSelectedRow();
+        int selectedRow =
+                usersTable.getSelectedRow();
 
         if (selectedRow == -1) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a user first.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
+
             return;
         }
 
-        int userId = (int) tableModel.getValueAt(selectedRow, 0);
-        String username = usernameField.getText().trim();
-        String password = new String(passwordField.getPassword()).trim();
-        String role = roleComboBox.getSelectedItem().toString();
+        int userId =
+                (int) tableModel
+                        .getValueAt(
+                                selectedRow,
+                                0
+                        );
+
+        String username =
+                usernameField
+                        .getText()
+                        .trim();
+
+        String password =
+                new String(
+                        passwordField
+                                .getPassword()
+                ).trim();
+
+        String role =
+                roleComboBox
+                        .getSelectedItem()
+                        .toString();
 
         if (username.isEmpty()) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Username cannot be empty.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
+
             return;
         }
 
         if (password.isEmpty()) {
 
             User selectedUser = null;
-            List<User> users = controller.getAllUsers();
+
+            List<User> users =
+                    controller.getAllUsers();
 
             for (User user : users) {
+
                 if (user.getId() == userId) {
+
                     selectedUser = user;
                     break;
                 }
             }
 
             if (selectedUser == null) {
+
                 JOptionPane.showMessageDialog(
                         this,
                         "Unable to find the selected user.",
                         "JobFit",
                         JOptionPane.ERROR_MESSAGE
                 );
+
                 return;
             }
 
-            password = selectedUser.getPassword();
+            password =
+                    selectedUser.getPassword();
         }
 
-        String error = controller.updateUser(userId, username, password, role);
+        String error =
+                controller.updateUser(
+                        userId,
+                        username,
+                        password,
+                        role
+                );
 
         if (error == null) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "User updated successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
+
             loadUsers();
+
         } else {
+
             JOptionPane.showMessageDialog(
                     this,
                     error,
@@ -259,51 +628,86 @@ public class ManageUsersFrame extends JFrame {
 
     private void deleteUser() {
 
-        int selectedRow = usersTable.getSelectedRow();
+        int selectedRow =
+                usersTable.getSelectedRow();
 
         if (selectedRow == -1) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a user first.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
+
             return;
         }
 
-        int userId = (int) tableModel.getValueAt(selectedRow, 0);
-        String username = tableModel.getValueAt(selectedRow, 1).toString();
+        int userId =
+                (int) tableModel
+                        .getValueAt(
+                                selectedRow,
+                                0
+                        );
 
-        if (currentUser != null && userId == currentUser.getId()) {
+        String username =
+                tableModel
+                        .getValueAt(
+                                selectedRow,
+                                1
+                        )
+                        .toString();
+
+        if (
+                currentUser != null
+                        && userId == currentUser.getId()
+        ) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "You cannot delete the account currently logged in.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
+
             return;
         }
 
-        int choice = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure you want to delete user \"" + username + "\"?",
-                "Confirm Delete",
-                JOptionPane.YES_NO_OPTION
-        );
+        int choice =
+                JOptionPane.showConfirmDialog(
+                        this,
+                        "Are you sure you want to delete user \""
+                                + username
+                                + "\"?",
+                        "Confirm Delete",
+                        JOptionPane.YES_NO_OPTION
+                );
 
-        if (choice != JOptionPane.YES_OPTION) return;
+        if (
+                choice
+                        != JOptionPane.YES_OPTION
+        ) {
+            return;
+        }
 
-        String error = controller.deleteUser(userId);
+        String error =
+                controller.deleteUser(
+                        userId
+                );
 
         if (error == null) {
+
             JOptionPane.showMessageDialog(
                     this,
                     "User deleted successfully.",
                     "JobFit",
                     JOptionPane.INFORMATION_MESSAGE
             );
+
             loadUsers();
+
         } else {
+
             JOptionPane.showMessageDialog(
                     this,
                     error,

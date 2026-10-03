@@ -15,10 +15,10 @@ public class App {
 
         SwingUtilities.invokeLater(() -> {
 
-            LoginFrame loginFrame =
-                    new LoginFrame();
+            LoginFrame loginFrame = new LoginFrame();
 
             loginFrame.setVisible(true);
-        });
+        }
+        );
     }
 }
