@@ -35,7 +35,7 @@ public class PostJobFrame extends BaseFormFrame {
                 "Post a Job",
                 "Create a new job listing for your company.",
                 850,
-                820
+                900
         );
 
         this.user = user;
@@ -55,164 +55,65 @@ public class PostJobFrame extends BaseFormFrame {
                 )
         );
 
-        JLabel sectionTitle =
-                new JLabel("Job Information");
+        JLabel sectionTitle = new JLabel("Job Information");
 
-        sectionTitle.setFont(
-                UITheme.SECTION_TITLE
-        );
+        sectionTitle.setFont(UITheme.SECTION_TITLE);
+        sectionTitle.setForeground(UITheme.TEXT);
+        sectionTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        sectionTitle.setForeground(
-                UITheme.TEXT
-        );
+        JLabel sectionInfo = new JLabel(
+                "Fill in the details below to create a new job posting.");
 
-        sectionTitle.setAlignmentX(
-                Component.LEFT_ALIGNMENT
-        );
-
-        JLabel sectionInfo =
-                new JLabel(
-                        "Fill in the details below to create a new job posting."
-                );
-
-        sectionInfo.setFont(
-                UITheme.SMALL
-        );
-
-        sectionInfo.setForeground(
-                UITheme.TEXT_SECONDARY
-        );
-
-        sectionInfo.setAlignmentX(
-                Component.LEFT_ALIGNMENT
-        );
+        sectionInfo.setFont(UITheme.SMALL);
+        sectionInfo.setForeground(UITheme.TEXT_SECONDARY);
+        sectionInfo.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         formPanel.add(sectionTitle);
         formPanel.add(Box.createVerticalStrut(6));
         formPanel.add(sectionInfo);
-        formPanel.add(Box.createVerticalStrut(24));
+        formPanel.add(Box.createVerticalStrut(20));
 
         // JOB TITLE
+        formPanel.add(createFieldLabel("Job Title"));
+        formPanel.add(Box.createVerticalStrut(8));
 
-        formPanel.add(
-                createFieldLabel("Job Title")
-        );
-
-        formPanel.add(
-                Box.createVerticalStrut(8)
-        );
-
-        titleField =
-                new JTextField();
-
+        titleField = new JTextField();
         styleField(titleField);
-
         formPanel.add(titleField);
-
-        formPanel.add(
-                Box.createVerticalStrut(18)
-        );
+        formPanel.add(Box.createVerticalStrut(14));
 
         // CATEGORY
+        formPanel.add(createFieldLabel("Job Category"));
+        formPanel.add(Box.createVerticalStrut(8));
 
-        formPanel.add(
-                createFieldLabel("Job Category")
+        categoryComboBox = new JComboBox<>();
+        styleComboBox(categoryComboBox);
+
+        JButton addCategoryButton = new RoundedButton(
+                "New Category",
+                UITheme.NAVY_LIGHT,
+                UITheme.NAVY
         );
 
-        formPanel.add(
-                Box.createVerticalStrut(8)
-        );
+        addCategoryButton.setPreferredSize(new Dimension(145, 44));
+        addCategoryButton.setMinimumSize(new Dimension(145, 44));
 
-        categoryComboBox =
-                new JComboBox<>();
-
-        styleComboBox(
-                categoryComboBox
-        );
-
-        JButton addCategoryButton =
-                new RoundedButton(
-                        "New Category",
-                        UITheme.NAVY_LIGHT,
-                        UITheme.NAVY
-                );
-
-        addCategoryButton.setPreferredSize(
-                new Dimension(
-                        145,
-                        44
-                )
-        );
-
-        addCategoryButton.setMinimumSize(
-                new Dimension(
-                        145,
-                        44
-                )
-        );
-
-        JPanel categoryPanel =
-                new JPanel(
-                        new BorderLayout(
-                                12,
-                                0
-                        )
-                );
-
+        JPanel categoryPanel = new JPanel(new BorderLayout(12, 0));
         categoryPanel.setOpaque(false);
+        categoryPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        categoryPanel.setPreferredSize(new Dimension(0, 44));
+        categoryPanel.setMinimumSize(new Dimension(0, 44));
+        categoryPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
 
-        categoryPanel.setAlignmentX(
-                Component.LEFT_ALIGNMENT
-        );
-
-        categoryPanel.setPreferredSize(
-                new Dimension(
-                        0,
-                        44
-                )
-        );
-
-        categoryPanel.setMinimumSize(
-                new Dimension(
-                        0,
-                        44
-                )
-        );
-
-        categoryPanel.setMaximumSize(
-                new Dimension(
-                        Integer.MAX_VALUE,
-                        44
-                )
-        );
-
-        categoryPanel.add(
-                categoryComboBox,
-                BorderLayout.CENTER
-        );
-
-        categoryPanel.add(
-                addCategoryButton,
-                BorderLayout.EAST
-        );
+        categoryPanel.add(categoryComboBox, BorderLayout.CENTER);
+        categoryPanel.add(addCategoryButton, BorderLayout.EAST);
 
         formPanel.add(categoryPanel);
-
-        formPanel.add(
-                Box.createVerticalStrut(18)
-        );
+        formPanel.add(Box.createVerticalStrut(14));
 
         // DESCRIPTION
-
-        formPanel.add(
-                createFieldLabel(
-                        "Job Description"
-                )
-        );
-
-        formPanel.add(
-                Box.createVerticalStrut(8)
-        );
+        formPanel.add(createFieldLabel("Job Description"));
+        formPanel.add(Box.createVerticalStrut(8));
 
         descriptionArea = new JTextArea();
         descriptionArea.setLineWrap(true);
@@ -220,134 +121,71 @@ public class PostJobFrame extends BaseFormFrame {
         descriptionArea.setFont(UITheme.BODY);
         descriptionArea.setForeground(UITheme.TEXT);
         descriptionArea.setBackground(Color.WHITE);
-        descriptionArea.setBorder(
-                new EmptyBorder(
-                        10,
-                        12,
-                        10,
-                        12));
+        descriptionArea.setBorder(new EmptyBorder(10, 12, 10, 12));
+
         JScrollPane descriptionScrollPane = new JScrollPane(descriptionArea);
-
         descriptionScrollPane.setBorder(BorderFactory.createLineBorder(UITheme.BORDER_BLUE));
-
         descriptionScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         descriptionScrollPane.setPreferredSize(new Dimension(0, 100));
         descriptionScrollPane.setMinimumSize(new Dimension(0, 90));
+        descriptionScrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 100));
 
-        descriptionScrollPane.setMaximumSize(
-                new Dimension(
-                        Integer.MAX_VALUE,
-                        90
-                )
-        );
-
-        formPanel.add(
-                descriptionScrollPane
-        );
-
-        formPanel.add(
-                Box.createVerticalStrut(18)
-        );
+        formPanel.add(descriptionScrollPane);
+        formPanel.add(Box.createVerticalStrut(14));
 
         // LOCATION
+        formPanel.add(createFieldLabel("Location"));
+        formPanel.add(Box.createVerticalStrut(8));
 
-        formPanel.add(
-                createFieldLabel("Location")
-        );
-
-        formPanel.add(
-                Box.createVerticalStrut(8)
-        );
-
-        locationField =
-                new JTextField();
-
-        styleField(
-                locationField
-        );
-
-        formPanel.add(
-                locationField
-        );
-
-        formPanel.add(
-                Box.createVerticalStrut(18)
-        );
+        locationField = new JTextField();
+        styleField(locationField);
+        formPanel.add(locationField);
+        formPanel.add(Box.createVerticalStrut(14));
 
         // SALARY
+        formPanel.add(createFieldLabel("Salary"));
+        formPanel.add(Box.createVerticalStrut(8));
 
-        formPanel.add(
-                createFieldLabel("Salary")
-        );
+        salaryField = new JTextField();
+        styleField(salaryField);
+        formPanel.add(salaryField);
 
-        formPanel.add(
-                Box.createVerticalStrut(8)
-        );
+        formPanel.add(Box.createVerticalStrut(6));
 
-        salaryField =
-                new JTextField();
+        JLabel salaryHint = new JLabel(
+                "Examples: 18000, 18k, 18k-20k, PHP 25000");
 
-        styleField(
-                salaryField
-        );
+        salaryHint.setFont(UITheme.SMALL);
+        salaryHint.setForeground(UITheme.TEXT_SECONDARY);
+        salaryHint.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        formPanel.add(
-                salaryField
-        );
+        formPanel.add(salaryHint);
+        formPanel.add(Box.createVerticalStrut(UITheme.GAP_MD));
 
-        formPanel.add(
-                Box.createVerticalStrut(6)
-        );
-
-        JLabel salaryHint =
-                new JLabel(
-                        "Examples: 18000, 18k, 18k-20k, PHP 25000"
-                );
-
-        salaryHint.setFont(
-                UITheme.SMALL
-        );
-
-        salaryHint.setForeground(
-                UITheme.TEXT_SECONDARY
-        );
-
-        salaryHint.setAlignmentX(
-                Component.LEFT_ALIGNMENT
-        );
-
-        formPanel.add(
-                salaryHint
-        );
-
-        formPanel.add(
-                Box.createVerticalStrut(
-                        UITheme.GAP_LG
-                )
-        );
-
-// ==========================================
-// BUTTONS
-// ==========================================
-
+        // BUTTONS
         JButton postButton = new RoundedButton(
-                        "Post Job",
-                        UITheme.BLUE,
-                        UITheme.BLUE_HOVER);
+                "Post Job",
+                UITheme.BLUE,
+                UITheme.BLUE_HOVER
+        );
 
-        JButton backButton = new RoundedButton("Back", UITheme.DANGER, new Color(190, 55, 65));
+        JButton backButton = new RoundedButton(
+                "Back",
+                UITheme.DANGER,
+                new Color(190, 55, 65)
+        );
+
         postButton.setPreferredSize(new Dimension(140, 42));
         backButton.setPreferredSize(new Dimension(110, 42));
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         buttonPanel.setOpaque(false);
         buttonPanel.add(postButton);
         buttonPanel.add(backButton);
+
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-// ==========================================
-// ACTIONS
-// ==========================================
-
+        // ACTIONS
         addCategoryButton.addActionListener(e -> addNewCategory());
         postButton.addActionListener(e -> postJob());
         backButton.addActionListener(e -> dispose());
@@ -356,113 +194,43 @@ public class PostJobFrame extends BaseFormFrame {
     private JLabel createFieldLabel(String text) {
 
         JLabel label = new JLabel(text);
-
         label.setFont(UITheme.LABEL);
-
         label.setForeground(UITheme.TEXT);
-
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         return label;
     }
 
-    private void styleField(
-            JTextField field
-    ) {
+    private void styleField(JTextField field) {
 
-        field.setFont(
-                UITheme.BODY
-        );
-
-        field.setForeground(
-                UITheme.TEXT
-        );
-
-        field.setBackground(
-                Color.WHITE
-        );
-
-        field.setAlignmentX(
-                Component.LEFT_ALIGNMENT
-        );
-
-        field.setPreferredSize(
-                new Dimension(
-                        0,
-                        44
-                )
-        );
-
-        field.setMinimumSize(
-                new Dimension(
-                        0,
-                        44
-                )
-        );
-
-        field.setMaximumSize(
-                new Dimension(
-                        Integer.MAX_VALUE,
-                        44
-                )
-        );
-
+        field.setFont(UITheme.BODY);
+        field.setForeground(UITheme.TEXT);
+        field.setBackground(Color.WHITE);
+        field.setAlignmentX(Component.LEFT_ALIGNMENT);
+        field.setPreferredSize(new Dimension(0, 44));
+        field.setMinimumSize(new Dimension(0, 44));
+        field.setMaximumSize(new Dimension(Integer.MAX_VALUE, 44));
         field.setBorder(
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(
-                                UITheme.BORDER_BLUE
-                        ),
-                        new EmptyBorder(
-                                8,
-                                12,
-                                8,
-                                12
-                        )
+                        BorderFactory.createLineBorder(UITheme.BORDER_BLUE),
+                        new EmptyBorder(8, 12, 8, 12)
                 )
         );
     }
 
-    private void styleComboBox(
-            JComboBox<JobCategory> comboBox
-    ) {
+    private void styleComboBox(JComboBox<JobCategory> comboBox) {
 
-        comboBox.setFont(
-                UITheme.BODY
-        );
-
-        comboBox.setForeground(
-                UITheme.TEXT
-        );
-
-        comboBox.setBackground(
-                Color.WHITE
-        );
-
-        comboBox.setPreferredSize(
-                new Dimension(
-                        0,
-                        44
-                )
-        );
-
-        comboBox.setMinimumSize(
-                new Dimension(
-                        0,
-                        44
-                )
-        );
-
-        comboBox.setBorder(
-                BorderFactory.createLineBorder(
-                        UITheme.BORDER_BLUE
-                )
-        );
+        comboBox.setFont(UITheme.BODY);
+        comboBox.setForeground(UITheme.TEXT);
+        comboBox.setBackground(Color.WHITE);
+        comboBox.setPreferredSize(new Dimension(0, 44));
+        comboBox.setMinimumSize(new Dimension(0, 44));
+        comboBox.setBorder(BorderFactory.createLineBorder(UITheme.BORDER_BLUE));
     }
 
     private void loadCategories() {
 
-        List<JobCategory> categories =
-                categoryController.getAllCategories();
+        List<JobCategory> categories = categoryController.getAllCategories();
 
         categoryComboBox.removeAllItems();
 
@@ -471,7 +239,6 @@ public class PostJobFrame extends BaseFormFrame {
         }
 
         if (categories.isEmpty()) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "No job categories found. Please add one using New Category.",
@@ -483,64 +250,44 @@ public class PostJobFrame extends BaseFormFrame {
 
     private void addNewCategory() {
 
-        JTextField nameField =
-                new JTextField();
-
-        JTextArea descArea =
-                new JTextArea(
-                        3,
-                        20
-                );
-
+        JTextField nameField = new JTextField();
+        JTextArea descArea = new JTextArea(3, 20);
         descArea.setLineWrap(true);
         descArea.setWrapStyleWord(true);
 
         Object[] message = {
-                "Category Name:",
-                nameField,
-                "Description:",
-                new JScrollPane(descArea)
+                "Category Name:", nameField,
+                "Description:", new JScrollPane(descArea)
         };
 
-        int option =
-                JOptionPane.showConfirmDialog(
-                        this,
-                        message,
-                        "Add New Job Category",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.PLAIN_MESSAGE
-                );
+        int option = JOptionPane.showConfirmDialog(
+                this,
+                message,
+                "Add New Job Category",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
 
         if (option != JOptionPane.OK_OPTION) {
             return;
         }
 
-        String name =
-                nameField.getText().trim();
-
-        String description =
-                descArea.getText().trim();
+        String name = nameField.getText().trim();
+        String description = descArea.getText().trim();
 
         if (name.isEmpty()) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Category name cannot be empty.",
                     "JobFit",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        boolean success =
-                categoryController.addCategory(
-                        name,
-                        description
-                );
+        boolean success = categoryController.addCategory(name, description);
 
         if (success) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Category \"" + name + "\" added.",
@@ -550,26 +297,13 @@ public class PostJobFrame extends BaseFormFrame {
 
             loadCategories();
 
-            for (
-                    int i = 0;
-                    i < categoryComboBox.getItemCount();
-                    i++
-            ) {
-
-                if (
-                        categoryComboBox
-                                .getItemAt(i)
-                                .getName()
-                                .equals(name)
-                ) {
-
+            for (int i = 0; i < categoryComboBox.getItemCount(); i++) {
+                if (categoryComboBox.getItemAt(i).getName().equals(name)) {
                     categoryComboBox.setSelectedIndex(i);
                     break;
                 }
             }
-
         } else {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Failed to add category.\nIt may already exist.",
@@ -582,21 +316,14 @@ public class PostJobFrame extends BaseFormFrame {
     private void postJob() {
 
         String title = titleField.getText().trim();
-
         String description = descriptionArea.getText().trim();
-
         String location = locationField.getText().trim();
-
         String salaryText = salaryField.getText().trim();
 
         JobCategory selectedCategory = (JobCategory) categoryComboBox.getSelectedItem();
 
-        if (
-                title.isEmpty()
-                        || description.isEmpty()
-                        || location.isEmpty()
-                        || salaryText.isEmpty()
-        ) {
+        if (title.isEmpty() || description.isEmpty()
+                || location.isEmpty() || salaryText.isEmpty()) {
 
             JOptionPane.showMessageDialog(
                     this,
@@ -604,29 +331,22 @@ public class PostJobFrame extends BaseFormFrame {
                     "Validation",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
         if (selectedCategory == null) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Please select a job category.",
                     "Validation",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        double salary =
-                SalaryParser.parse(
-                        salaryText
-                );
+        double salary = SalaryParser.parse(salaryText);
 
         if (salary < 0) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Invalid salary format.\n"
@@ -634,41 +354,34 @@ public class PostJobFrame extends BaseFormFrame {
                     "Validation",
                     JOptionPane.WARNING_MESSAGE
             );
-
             return;
         }
 
-        int employerId =
-                getEmployerId();
+        int employerId = getEmployerId();
 
         if (employerId <= 0) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Employer profile was not found.",
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
-
             return;
         }
 
-        Job job =
-                new Job(
-                        0,
-                        employerId,
-                        selectedCategory.getId(),
-                        title,
-                        description,
-                        location,
-                        salary
-                );
+        Job job = new Job(
+                0,
+                employerId,
+                selectedCategory.getId(),
+                title,
+                description,
+                location,
+                salary
+        );
 
-        boolean success =
-                jobController.addJob(job);
+        boolean success = jobController.addJob(job);
 
         if (success) {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Job posted successfully!",
@@ -681,15 +394,10 @@ public class PostJobFrame extends BaseFormFrame {
             locationField.setText("");
             salaryField.setText("");
 
-            if (
-                    categoryComboBox.getItemCount() > 0
-            ) {
-
+            if (categoryComboBox.getItemCount() > 0) {
                 categoryComboBox.setSelectedIndex(0);
             }
-
         } else {
-
             JOptionPane.showMessageDialog(
                     this,
                     "Failed to post job.",
@@ -701,27 +409,14 @@ public class PostJobFrame extends BaseFormFrame {
 
     private int getEmployerId() {
 
-        String sql =
-                "SELECT id FROM Employer WHERE user_id = ?";
+        String sql = "SELECT id FROM Employer WHERE user_id = ?";
 
-        try (
-                Connection connection =
-                        DatabaseConnection.getConnection();
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
 
-                PreparedStatement statement =
-                        connection.prepareStatement(sql)
-        ) {
+            statement.setInt(1, user.getId());
 
-            statement.setInt(
-                    1,
-                    user.getId()
-            );
-
-            try (
-                    ResultSet resultSet =
-                            statement.executeQuery()
-            ) {
-
+            try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getInt("id");
                 }

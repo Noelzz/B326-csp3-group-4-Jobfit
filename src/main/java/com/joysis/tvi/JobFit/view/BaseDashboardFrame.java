@@ -184,85 +184,25 @@ public abstract class BaseDashboardFrame extends JFrame {
 
     private JPanel createTopBar() {
 
-        JPanel topBar =
-                new JPanel(
-                        new BorderLayout()
-                );
+        JPanel topBar = new JPanel(new BorderLayout());
 
-        topBar.setBackground(
-                Color.WHITE
-        );
+        topBar.setBackground(Color.WHITE);
 
         topBar.setPreferredSize(
-                new Dimension(
-                        0,
-                        UITheme.TOPBAR_HEIGHT
-                )
+                new Dimension(0, UITheme.TOPBAR_HEIGHT)
         );
 
         topBar.setBorder(
-                new EmptyBorder(
-                        12,
-                        25,
-                        12,
-                        25
-                )
+                new EmptyBorder(12, 25, 12, 25)
         );
 
-        JTextField search =
-                new JTextField(
-                        "Search..."
-                );
+        JLabel userLabel = new JLabel(username);
 
-        search.setPreferredSize(
-                new Dimension(
-                        260,
-                        38
-                )
-        );
+        userLabel.setFont(UITheme.LABEL);
+        userLabel.setForeground(UITheme.TEXT);
+        userLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        search.setFont(
-                UITheme.BODY
-        );
-
-        search.setForeground(
-                UITheme.TEXT_SECONDARY
-        );
-
-        search.setBorder(
-                BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(
-                                UITheme.BORDER
-                        ),
-                        new EmptyBorder(
-                                5,
-                                12,
-                                5,
-                                12
-                        )
-                )
-        );
-
-        JLabel userLabel =
-                new JLabel(username);
-
-        userLabel.setFont(
-                UITheme.LABEL
-        );
-
-        userLabel.setForeground(
-                UITheme.TEXT
-        );
-
-        topBar.add(
-                search,
-                BorderLayout.WEST
-        );
-
-        topBar.add(
-                userLabel,
-                BorderLayout.EAST
-        );
+        topBar.add(userLabel, BorderLayout.EAST);
 
         return topBar;
     }
